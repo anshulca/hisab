@@ -54,7 +54,7 @@ function renderCover(doc: jsPDF, n: NormalizedITR) {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(11);
   doc.setTextColor(181, 176, 171);
-  doc.text('Generated with HISAB v1.0.0 - JSON se Computation tak', 70, 186);
+  doc.text('Generated with HISAB (BETA TRIAL) - JSON se Computation tak', 70, 186);
 
   doc.setFontSize(20);
   doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
@@ -89,8 +89,8 @@ function renderCover(doc: jsPDF, n: NormalizedITR) {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(138, 134, 144);
-  doc.text('Prepared by: CA Anshul Karwa', 70, 520);
-  doc.text('hisab.studyfromnotes.com', 70, 538);
+  doc.text('Prepared automatically by HISAB - made by CA Anshul Karwa', 70, 520);
+  doc.text('hisab.studyfromnotes.com  ·  BETA', 70, 538);
 }
 
 function renderSection(doc: jsPDF, section: ReportSection) {
@@ -152,7 +152,7 @@ function renderSection(doc: jsPDF, section: ReportSection) {
     doc.setFont('helvetica', 'italic');
     doc.setFontSize(8);
     doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
-    doc.text('Prepared by CA Anshul Karwa · HISAB ITR Computation Engine', margin, doc.internal.pageSize.getHeight() - 30);
+    doc.text('Prepared automatically by HISAB · made by CA Anshul Karwa · BETA', margin, doc.internal.pageSize.getHeight() - 30);
   }
 }
 
@@ -167,16 +167,16 @@ function renderPageDecor(doc: jsPDF) {
     doc.setPage(i);
 
     try {
-      pdf.setGState(new pdf.GState({ opacity: 0.09 }));
+      pdf.setGState(new pdf.GState({ opacity: 0.08 }));
     } catch {
       /* GState unsupported - skip watermark */
     }
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(40);
+    doc.setFontSize(30);
     doc.setTextColor(GOLD[0], GOLD[1], GOLD[2]);
-    const step = 120;
+    const step = 220;
     for (let row = 0; row <= Math.ceil(height / step); row++) {
-      doc.text('CA Anshul Karwa · HISAB', width / 2, row * step + 60, { angle: 40, align: 'center' });
+      doc.text('HISAB  ·  BETA  ·  by CA Anshul Karwa', width / 2, row * step + 80, { angle: 35, align: 'center' });
     }
     try {
       pdf.setGState(new pdf.GState({ opacity: 1 }));
@@ -187,8 +187,8 @@ function renderPageDecor(doc: jsPDF) {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
-    doc.text('Made by CA Anshul Karwa', width / 2, 26, { align: 'center' });
-    doc.text('Made by CA Anshul Karwa', width / 2, height - 12, { align: 'center' });
+    doc.text('Made by CA Anshul Karwa  ·  BETA TRIAL', width / 2, 26, { align: 'center' });
+    doc.text('Prepared automatically by HISAB · made by CA Anshul Karwa', width / 2, height - 12, { align: 'center' });
     doc.text(`Page ${i} of ${pages}`, width - 54, height - 18, { align: 'right' });
   }
 }

@@ -75,28 +75,48 @@ export function parseRealItr4(input: unknown): {
 
   const incomeDeductions = (itr4.IncomeDeductions ?? {}) as Record<string, unknown>;
   const scheduleBP = (incomeDeductions.ScheduleBP ?? {}) as Record<string, unknown>;
-  const presumptive = (scheduleBP.PersumptiveInc44AD ?? {}) as Record<string, unknown>;
-  const turnover = pick(presumptive, ['GrsTotalTrnOver', 'GrossTotalTurnOver', 'TotalTurnOver']);
-  const presumptiveIncome = pick(presumptive, ['TotPersumptiveInc44AD', 'TotalPresumptiveIncome', 'PersumptiveInc44AD']);
+  const schedule44ad = (scheduleBP.Schedule44AD ?? scheduleBP.Sch44AD ?? scheduleBP.PersumptiveInc44AD ?? {}) as Record<string, unknown>;
+
+  function pickFromList(objects: Array<Record<string, unknown> | undefined>, keys: string[]): number {
+    for (const obj of objects) {
+      const value = pick(obj, keys);
+      if (value !== 0) return value;
+    }
+    return 0;
+  }
+
+  const turnover = pickFromList([schedule44ad, scheduleBP], [
+    'GrsTotalTrnOver', 'GrossTotalTurnOver', 'TotalTurnOver', 'GrsTotTrnOver',
+    'GrossTurnOver', 'TotalTurnover', 'Turnover', 'GrossReceipts', 'GrsTotalTrnOverOptProInc'
+  ]);
+  const presumptiveIncome = pickFromList([schedule44ad, scheduleBP], [
+    'TotPersumptiveInc44AD', 'TotalPresumptiveIncome', 'PersumptiveInc44AD', 'TotPersumptiveInc',
+    'PresumptiveIncome', 'TotalIncome', 'TotIncOfBusinessOrProfession', 'TotalBusinessIncome',
+    'BusinessIncome', 'NetBusinessIncome', 'TotalPGBP', 'TotPGBP', 'NetProfit', 'TotalOfCapitalGains'
+  ]);
 
   const scheduleCG = incomeDeductions.ScheduleCG as Record<string, unknown> | undefined;
   const scheduleOS = incomeDeductions.ScheduleOS as Record<string, unknown> | undefined;
-  const capitalGains = pick(scheduleCG, ['TotCptlGain', 'TotalCapitalGain', 'CptlGain', 'GrossCptlGain']);
-  const otherSources = pick(scheduleOS, ['TotalSchOS', 'GrossOtherSrc', 'TotalOtherSrc', 'TotOtherSrc', 'GrossOtherSources']);
+  const capitalGains = pickFromList([scheduleCG], ['TotCptlGain', 'TotalCapitalGain', 'CptlGain', 'GrossCptlGain', 'TotalCG', 'CapitalGain']);
+  const otherSources = pickFromList([scheduleOS], [
+    'TotalSchOS', 'GrossOtherSrc', 'TotalOtherSrc', 'TotOtherSrc', 'GrossOtherSources',
+    'OtherSourceTotal', 'TotalOtherIncome', 'OtherIncome', 'IncomeFromOtherSources', 'TotalOtherSources'
+  ]);
+
+  const taxComp = (itr4.TaxComputation ?? {}) as Record<string, unknown>;
+  const officialTotalIncome = pick(taxComp, ['TotalIncome', 'GrossTotalIncome', 'TotalGrossIncome']);
+  const officialNetLiability = pick(taxComp, ['NetTaxLiability', 'NetTaxPayable', 'TotalTaxPayable', 'TotalTax']);
 
   const taxPaid = (itr4.TaxPaid ?? {}) as Record<string, unknown>;
   const taxesPaid = (taxPaid.TaxesPaid ?? {}) as Record<string, unknown>;
-  const tdsTotal = pick(taxesPaid, ['TDS', 'Tds', 'TotalTDS']);
-  const advanceTax = pick(taxesPaid, ['AdvanceTax']);
-  const selfAssessmentTax = pick(taxesPaid, ['SelfAssessmentTax']);
-
-  const taxComp = (itr4.TaxComputation ?? {}) as Record<string, unknown>;
-  const officialNetLiability = pick(taxComp, ['NetTaxLiability', 'NetTaxPayable', 'TotalTaxPayable']);
+  const tdsTotal = pickFromList([taxesPaid, taxPaid], ['TDS', 'TotalTDS', 'Tds', 'TDSDeducted', 'TotalTDSDeducted']);
+  const advanceTax = pickFromList([taxesPaid, taxPaid], ['AdvanceTax', 'TotalAdvanceTax', 'AdvTax']);
+  const selfAssessmentTax = pickFromList([taxesPaid, taxPaid], ['SelfAssessmentTax', 'TotalSelfAssessmentTax']);
 
   const refund = (itr4.Refund ?? {}) as Record<string, unknown>;
-  const refundDue = pick(refund, ['RefundDue']);
+  const refundDue = pick(refund, ['RefundDue', 'Refund']);
 
-  const finances = (scheduleBP.FinanclPartclrOfBusiness ?? {}) as Record<string, unknown>;
+  const finances = (scheduleBP.FinanclPartclrOfBusiness ?? scheduleBP.FinancialParticularsOfBusiness ?? {}) as Record<string, unknown>;
   const balanceSheet = {
     totalAssets: pick(finances, ['TotalAssets']),
     cashInHand: pick(finances, ['CashInHand']),
@@ -107,7 +127,16 @@ export function parseRealItr4(input: unknown): {
     unsecuredLoans: pick(finances, ['UnSecuredLoans'])
   };
 
-  const totalIncome = presumptiveIncome + capitalGains + otherSources;
+  const linkedIncome = presumptiveIncome + capitalGains + otherSources;
+  const totalIncome = linkedIncome > 0 ? linkedIncome : officialTotalIncome;
+
+  if (linkedIncome === 0) {
+    issues.push({
+      path: 'IncomeDeductions',
+      message: 'Income could not be mapped from the expected ITR-4 keys; using official TaxComputation.TotalIncome as fallback. This file may use a different schema (BETA).',
+      severity: 'warning'
+    });
+  }
 
   const taxpayer: Taxpayer = {
     name,
@@ -193,6 +222,15 @@ export function parseRealItr4(input: unknown): {
     }
   ].filter((s) => s.amount !== 0);
 
+  if (sourceRows.length === 0 && totalIncome > 0) {
+    sourceRows.push({
+      code: 'GTI',
+      label: 'Income as per ITR (not split into heads)',
+      amount: totalIncome,
+      percentage: 100
+    });
+  }
+
   const reportSections: ReportSection[] = [
     {
       id: 'cover',
@@ -265,6 +303,24 @@ export function parseRealItr4(input: unknown): {
       ]
     }
   ];
+
+  if (linkedIncome === 0) {
+    reportSections.push({
+      id: 'parsing',
+      title: 'Parsing Note (BETA)',
+      summary: 'Income heads could not be mapped from the expected ITR-4 keys, so HISAB used the official TaxComputation.TotalIncome. Sharing the detected keys below with the developer will fix the split.',
+      details: [
+        { label: 'ScheduleBP keys', value: Object.keys(scheduleBP).slice(0, 16).join(', ') || '—' },
+        { label: 'ScheduleOS keys', value: scheduleOS ? Object.keys(scheduleOS).slice(0, 16).join(', ') : '—' },
+        { label: 'ScheduleCG keys', value: scheduleCG ? Object.keys(scheduleCG).slice(0, 16).join(', ') : '—' },
+        { label: 'TaxComputation keys', value: Object.keys(taxComp).slice(0, 16).join(', ') || '—' },
+        { label: 'TaxesPaid keys', value: Object.keys(taxesPaid).slice(0, 16).join(', ') || '—' },
+        { label: 'Gross Total Income used', value: totalIncome },
+        { label: 'TDS detected', value: tdsTotal },
+        { label: 'Regime detected', value: regime === 'new' ? 'New (115BAC)' : 'Old' }
+      ]
+    });
+  }
 
   const normalized: NormalizedITR = {
     taxpayer,
