@@ -1,0 +1,53 @@
+{
+  "taxpayer": {
+    "name": "Dr. Meera Sharma",
+    "pan": "FGHIJ5678K",
+    "assessmentYear": "2024-25",
+    "financialYear": "2023-24",
+    "type": "professional",
+    "regime": "new",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "pinCode": "560001",
+    "profession": "Medical Practitioner"
+  },
+  "income": {
+    "businessIncome": {
+      "grossReceipts": 2400000,
+      "presumptive": true,
+      "section": "44ADA",
+      "rate": 0.5,
+      "computedIncome": 1200000
+    },
+    "capitalGains": 75000,
+    "otherSources": 42000
+  },
+  "expenses": [
+    { "category": "Salaries", "label": "Clinic Staff", "amount": 240000 },
+    { "category": "Rent", "label": "Clinic Rent", "amount": 240000 },
+    { "category": "Electricity", "label": "Utilities", "amount": 60000 },
+    { "category": "Professional Development", "label": "CME & Conferences", "amount": 50000 },
+    { "category": "Software", "label": "Software Subscriptions", "amount": 25000 },
+    { "category": "Marketing", "label": "Advertising", "amount": 18000 },
+    { "category": "Travel", "label": "Travel", "amount": 20000 },
+    { "category": "Miscellaneous", "label": "Miscellaneous", "amount": 12000 }
+  ],
+  "depreciation": {
+    "halfYearForNew": false,
+    "blocks": [
+      { "blockName": "Medical Equipment", "rate": 0.15, "openingWdv": 1500000, "additions": 300000, "sales": 0 },
+      { "blockName": "Furniture & Fittings", "rate": 0.1, "openingWdv": 180000, "additions": 0, "sales": 0 },
+      { "blockName": "Computers & Software", "rate": 0.4, "openingWdv": 120000, "additions": 0, "sales": 0 }
+    ]
+  },
+  "deductions": [
+    { "code": "80C", "label": "LIC, PF, PPF, ELSS, Tuition Fees", "amount": 150000 },
+    { "code": "80CCD1B", "label": "NPS (Additional)", "amount": 50000 },
+    { "code": "80D", "label": "Medical Insurance Premium", "amount": 30000 }
+  ],
+  "prepaid": {
+    "advanceTax": 0,
+    "tds": 60000,
+    "selfAssessmentTax": 0
+  }
+}

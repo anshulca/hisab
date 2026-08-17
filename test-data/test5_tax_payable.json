@@ -1,0 +1,54 @@
+{
+  "taxpayer": {
+    "name": "Vikram Malhotra",
+    "pan": "VWXYZ7890W",
+    "assessmentYear": "2024-25",
+    "financialYear": "2023-24",
+    "type": "professional",
+    "regime": "new",
+    "city": "Gurugram",
+    "state": "Haryana",
+    "pinCode": "122001",
+    "profession": "Management Consultant"
+  },
+  "income": {
+    "businessIncome": {
+      "grossReceipts": 9500000,
+      "presumptive": false,
+      "section": "44ADA",
+      "rate": 0.5,
+      "computedIncome": 4750000
+    },
+    "capitalGains": 250000,
+    "otherSources": 180000
+  },
+  "expenses": [
+    { "category": "Salaries", "label": "Salaries & Wages", "amount": 950000 },
+    { "category": "Office Rent", "label": "Office Rent", "amount": 480000 },
+    { "category": "Software", "label": "Software & Subscriptions", "amount": 150000 },
+    { "category": "Professional Fees", "label": "Consulting Fees Paid", "amount": 240000 },
+    { "category": "Travel", "label": "Travel & Conveyance", "amount": 180000 },
+    { "category": "Marketing", "label": "Marketing & Promotion", "amount": 120000 },
+    { "category": "Telephone", "label": "Telephone & Internet", "amount": 60000 },
+    { "category": "Miscellaneous", "label": "Miscellaneous", "amount": 50000 }
+  ],
+  "depreciation": {
+    "halfYearForNew": true,
+    "blocks": [
+      { "blockName": "Office Equipment", "rate": 0.15, "openingWdv": 800000, "additions": 250000, "sales": 0 },
+      { "blockName": "Furniture & Fittings", "rate": 0.1, "openingWdv": 300000, "additions": 0, "sales": 0 },
+      { "blockName": "Computers & Software", "rate": 0.4, "openingWdv": 200000, "additions": 80000, "sales": 0 },
+      { "blockName": "Vehicles", "rate": 0.15, "openingWdv": 900000, "additions": 0, "sales": 0 }
+    ]
+  },
+  "deductions": [
+    { "code": "80CCD2", "label": "Employer NPS Contribution", "amount": 70000 },
+    { "code": "80C", "label": "LIC, PF, PPF, ELSS, Tuition Fees", "amount": 120000 },
+    { "code": "80D", "label": "Medical Insurance Premium", "amount": 20000 }
+  ],
+  "prepaid": {
+    "advanceTax": 150000,
+    "tds": 90000,
+    "selfAssessmentTax": 35000
+  }
+}

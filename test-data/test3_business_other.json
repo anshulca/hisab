@@ -1,0 +1,53 @@
+{
+  "taxpayer": {
+    "name": "Amit & Sons Enterprises",
+    "pan": "KLMNO9012P",
+    "assessmentYear": "2024-25",
+    "financialYear": "2023-24",
+    "type": "other",
+    "regime": "new",
+    "city": "Indore",
+    "state": "Madhya Pradesh",
+    "pinCode": "452001",
+    "profession": "Wholesale Distribution"
+  },
+  "income": {
+    "businessIncome": {
+      "grossReceipts": 12000000,
+      "presumptive": true,
+      "section": "44AD",
+      "rate": 0.06,
+      "computedIncome": 720000
+    },
+    "capitalGains": 0,
+    "otherSources": 95000
+  },
+  "expenses": [
+    { "category": "Purchases", "label": "Goods Purchased", "amount": 8100000 },
+    { "category": "Salaries", "label": "Salaries & Wages", "amount": 720000 },
+    { "category": "Rent", "label": "Godown Rent", "amount": 360000 },
+    { "category": "Electricity", "label": "Electricity", "amount": 144000 },
+    { "category": "Freight", "label": "Freight & Transport", "amount": 210000 },
+    { "category": "Repairs", "label": "Repairs & Maintenance", "amount": 60000 },
+    { "category": "Bank", "label": "Bank Charges", "amount": 24000 },
+    { "category": "Miscellaneous", "label": "Miscellaneous", "amount": 42000 }
+  ],
+  "depreciation": {
+    "halfYearForNew": true,
+    "blocks": [
+      { "blockName": "Buildings", "rate": 0.1, "openingWdv": 2800000, "additions": 0, "sales": 0 },
+      { "blockName": "Plant & Machinery", "rate": 0.15, "openingWdv": 1200000, "additions": 400000, "sales": 0 },
+      { "blockName": "Vehicles", "rate": 0.15, "openingWdv": 700000, "additions": 0, "sales": 0 },
+      { "blockName": "Computers & Software", "rate": 0.4, "openingWdv": 150000, "additions": 60000, "sales": 0 }
+    ]
+  },
+  "deductions": [
+    { "code": "80C", "label": "LIC, PF, PPF, ELSS, Tuition Fees", "amount": 100000 },
+    { "code": "80D", "label": "Medical Insurance Premium", "amount": 20000 }
+  ],
+  "prepaid": {
+    "advanceTax": 50000,
+    "tds": 30000,
+    "selfAssessmentTax": 0
+  }
+}
