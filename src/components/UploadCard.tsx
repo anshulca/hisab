@@ -40,7 +40,7 @@ export function UploadCard({ onGenerated }: UploadCardProps) {
         <div className="dropzone-icon">📄</div>
         <h3 style={{ marginBottom: 8, fontSize: '1.1rem' }}>Drop your ITR JSON here</h3>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-          Drag & drop or <strong style={{ color: 'var(--gold)' }}>browse</strong> — max 5MB
+          Drag & drop or <strong style={{ color: 'var(--gold)' }}>browse</strong> - max 5MB
         </p>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: 8 }}>
           Supported: ITR-4 export (.json) · test files included in <code>test-data/</code>

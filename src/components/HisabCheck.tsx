@@ -89,7 +89,7 @@ export function HisabCheck({ onNavigate }: HisabCheckProps) {
         <div className="card" style={{ marginTop: 24, textAlign: 'center', background: allChecked ? 'var(--gold-glow)' : undefined }}>
           <p style={{ color: 'var(--text-secondary)' }}>
             {allChecked
-              ? '✓ All checks complete — the computation is internally consistent.'
+              ? '✓ All checks complete - the computation is internally consistent.'
               : `${Object.values(checked).filter(Boolean).length}/${CHECK_ITEMS.length} checks done.`}
           </p>
           <p className="card-sub" style={{ marginTop: 6 }}>Net tax payable: {formatINR(tax.netTaxPayable)}</p>

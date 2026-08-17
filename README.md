@@ -3,7 +3,7 @@
 **JSON se Computation tak.**
 By CA Anshul Karwa
 
-Live demo: [anshulca.github.io/hisab](https://anshulca.github.io/hisab)
+Live demo: [hisab.studyfromnotes.com](https://hisab.studyfromnotes.com)
 
 ## 🚀 Quick Start
 

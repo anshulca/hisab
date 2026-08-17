@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useComputationStore } from './store/computationStore';
 import { Header } from './components/Header';
-import { Hero } from './components/Hero';
+import { Landing } from './components/Landing';
 import { ReviewCentre } from './components/ReviewCentre';
 import { ProfitAndLossWorking } from './components/ProfitAndLossWorking';
 import { FinalHisabCheck } from './components/FinalHisabCheck';
@@ -24,7 +24,7 @@ function App() {
   const renderSection = () => {
     switch (activeSection) {
       case 'hero':
-        return <Hero onGenerate={() => setActiveSection('review')} />;
+        return <Landing onGenerate={() => setActiveSection('review')} />;
       case 'review':
         return <ReviewCentre onNavigate={setActiveSection} />;
       case 'income':
@@ -49,7 +49,7 @@ function App() {
           />
         );
       default:
-        return <Hero onGenerate={() => setActiveSection('review')} />;
+        return <Landing onGenerate={() => setActiveSection('review')} />;
     }
   };
 
@@ -59,7 +59,7 @@ function App() {
       <main>
         {renderSection()}
       </main>
-      <Footer />
+      <Footer onNavigate={setActiveSection} />
     </div>
   );
 }

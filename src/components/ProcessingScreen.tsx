@@ -13,7 +13,7 @@ export function ProcessingScreen({ progress, fileName }: ProcessingScreenProps) 
       <div style={{ fontSize: '2.6rem', marginBottom: 12 }}>⚙️</div>
       <h3 className="card-title">Processing your ITR</h3>
       <p className="card-sub">
-        {fileName ? `Reading ${fileName}` : 'Reading file'} — {Math.round(progress)}%
+        {fileName ? `Reading ${fileName}` : 'Reading file'} - {Math.round(progress)}%
       </p>
 
       <div style={{ textAlign: 'left', marginTop: 20 }}>

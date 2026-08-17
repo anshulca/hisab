@@ -54,7 +54,7 @@ function renderCover(doc: jsPDF, n: NormalizedITR) {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(11);
   doc.setTextColor(181, 176, 171);
-  doc.text('Generated with HISAB v1.0.0 — JSON se Computation tak', 70, 186);
+  doc.text('Generated with HISAB v1.0.0 - JSON se Computation tak', 70, 186);
 
   doc.setFontSize(20);
   doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
@@ -90,7 +90,7 @@ function renderCover(doc: jsPDF, n: NormalizedITR) {
   doc.setFontSize(9);
   doc.setTextColor(138, 134, 144);
   doc.text('Prepared by: CA Anshul Karwa', 70, 520);
-  doc.text('anshulca.github.io/hisab', 70, 538);
+  doc.text('hisab.studyfromnotes.com', 70, 538);
 }
 
 function renderSection(doc: jsPDF, section: ReportSection) {
