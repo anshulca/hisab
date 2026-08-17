@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseItr4Object } from '../src/parser/itr4Parser';
+import { parseItr4Object, parseItr4 } from '../src/parser/itr4Parser';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.resolve(__dirname, '..', 'test-data');
@@ -33,4 +33,16 @@ for (const sample of samples) {
     console.log(`  [RECON] ${dispute?.value}`);
   }
   console.log(`Issues: ${issues.length}`);
+}
+
+const bomPath = path.join(dataDir, 'test6_real_itr4.json');
+const bomRaw = '\uFEFF' + fs.readFileSync(bomPath, 'utf-8');
+try {
+  const { normalized } = parseItr4(bomRaw);
+  console.log('\n=== BOM prefix test ===');
+  console.log(normalized.taxpayer.name, 'parsed OK with BOM prefix');
+} catch (err) {
+  console.log('\n=== BOM prefix test ===');
+  console.log('FAILED:', err.message);
+  process.exitCode = 1;
 }

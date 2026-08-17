@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import type { MouseEvent } from 'react';
-import { UploadCard } from './UploadCard';
 
 interface LandingProps {
   onGenerate: () => void;
@@ -42,7 +41,7 @@ export function Landing({ onGenerate }: LandingProps) {
               Upload your ITR JSON file and in just 1 click, generate complete Tax Computation, P&L, Balance Sheet, and Depreciation Schedule.
             </p>
             <div className="hero-actions">
-              <button className="btn-gold" onClick={() => scrollToSection('upload')}>
+              <button className="btn-gold" onClick={onGenerate}>
                 GENERATE MY HISAB <i className="fas fa-arrow-right" />
               </button>
               <button className="btn-ghost" onClick={() => scrollToSection('how')}>
@@ -84,22 +83,6 @@ export function Landing({ onGenerate }: LandingProps) {
                 <div className="particle" style={{ top: '20%', left: '95%', animationDelay: '3s' }} />
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* UPLOAD */}
-      <section className="section-feel" id="upload" style={{ padding: '70px 0' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <span className="hero-badge" style={{ margin: '0 auto' }}><i className="fas fa-upload" style={{ fontSize: '0.4rem' }} /> GET STARTED</span>
-            <h2 style={{ fontSize: 'clamp(1.6rem,3vw,2.6rem)', fontWeight: 600, marginTop: 10, color: 'var(--text)' }}>
-              Upload your <span style={{ color: 'var(--gold)' }}>ITR JSON</span>
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>JSON se Computation tak - in one click.</p>
-          </div>
-          <div style={{ maxWidth: 700, margin: '0 auto' }}>
-            <UploadCard onGenerated={onGenerate} />
           </div>
         </div>
       </section>

@@ -53,7 +53,7 @@ export function Header({ onNavigate, isFinalized }: HeaderProps) {
             </div>
           </label>
 
-          <button className="try-btn" onClick={() => scrollToSection('upload', onNavigate)}>
+          <button className="try-btn" onClick={() => onNavigate('app')}>
             <i className="fas fa-lock" style={{ marginRight: 6, fontSize: '0.6rem' }} /> Try HISAB
           </button>
         </nav>

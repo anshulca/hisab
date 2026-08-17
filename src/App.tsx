@@ -7,6 +7,7 @@ import { ProfitAndLossWorking } from './components/ProfitAndLossWorking';
 import { FinalHisabCheck } from './components/FinalHisabCheck';
 import { DepreciationScheduleEnhanced } from './components/DepreciationScheduleEnhanced';
 import { IncomeBreakdownEnhanced } from './components/IncomeBreakdownEnhanced';
+import { Workspace } from './components/Workspace';
 import { Footer } from './components/Footer';
 
 function App() {
@@ -24,7 +25,9 @@ function App() {
   const renderSection = () => {
     switch (activeSection) {
       case 'hero':
-        return <Landing onGenerate={() => setActiveSection('review')} />;
+        return <Landing onGenerate={() => setActiveSection('app')} />;
+      case 'app':
+        return <Workspace onNavigate={setActiveSection} />;
       case 'review':
         return <ReviewCentre onNavigate={setActiveSection} />;
       case 'income':
@@ -49,7 +52,7 @@ function App() {
           />
         );
       default:
-        return <Landing onGenerate={() => setActiveSection('review')} />;
+        return <Landing onGenerate={() => setActiveSection('app')} />;
     }
   };
 

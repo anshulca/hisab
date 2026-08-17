@@ -28,6 +28,7 @@ export function Footer({ onNavigate }: FooterProps) {
 
           <div className="footer-col">
             <h4>Product</h4>
+            <a href="#app" onClick={(e) => { e.preventDefault(); onNavigate?.('app'); }}>Generate HISAB</a>
             <a href="#how" onClick={(e) => { e.preventDefault(); scrollToSection('how', onNavigate); }}>How It Works</a>
             <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features', onNavigate); }}>Features</a>
             <a href="#hisab" onClick={(e) => { e.preventDefault(); onNavigate?.('hisabCheck'); }}>HISAB Check</a>

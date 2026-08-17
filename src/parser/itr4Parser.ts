@@ -67,12 +67,18 @@ interface RawItr {
   prepaid?: RawPrepaid;
 }
 
+function stripBom(text: string): string {
+  return text.charCodeAt(0) === 0xfeff ? text.slice(1) : text;
+}
+
 export function parseItr4(raw: string): ParseResult {
   let data: unknown;
   try {
-    data = JSON.parse(raw);
+    data = JSON.parse(stripBom(raw).trim());
   } catch {
-    throw new Error('Invalid JSON file. Please upload a valid ITR export.');
+    throw new Error(
+      'This file could not be read as JSON. Please upload the ITR export from the e-filing portal (expected structure: { "ITR": { "ITR4": { ... } } }).'
+    );
   }
   return parseItr4Object(data);
 }
