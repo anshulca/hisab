@@ -11,15 +11,37 @@ export function useComputation() {
 
     const income = normalizedData.incomeBreakdown;
     const expenses = normalizedData.expenseSummary.items;
+    const depreciation = normalizedData.depreciation.totalDepreciation;
+    const revenue = income.grossReceipts > 0 ? income.grossReceipts : income.businessIncome;
+
+    if (expenses.length === 0) {
+      const netProfit = income.businessIncome;
+      return {
+        revenue,
+        cogs: 0,
+        grossProfit: netProfit,
+        expenses: 0,
+        depreciation: 0,
+        operatingProfit: netProfit,
+        otherIncome: income.otherSources,
+        ebitda: netProfit,
+        netProfit,
+        margins: {
+          gross: revenue > 0 ? (netProfit / revenue) * 100 : 0,
+          operating: revenue > 0 ? (netProfit / revenue) * 100 : 0,
+          net: revenue > 0 ? (netProfit / revenue) * 100 : 0
+        }
+      };
+    }
+
     const cogs = expenses.find((e) => e.category === 'Purchases')?.amount ?? 0;
     const otherExpenses = expenses.filter((e) => e.category !== 'Purchases');
-    const revenue = income.grossReceipts > 0 ? income.grossReceipts : income.businessIncome;
 
     return reconstructPnl({
       revenue,
       cogs,
       expenses: otherExpenses,
-      depreciation: normalizedData.depreciation.totalDepreciation,
+      depreciation,
       otherIncome: income.otherSources
     });
   }, [normalizedData]);

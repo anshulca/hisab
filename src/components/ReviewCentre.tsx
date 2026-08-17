@@ -14,6 +14,8 @@ export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
     if (normalizedData) generatePdf(normalizedData);
   };
 
+  const reconciliation = reportSections.find((s) => s.id === 'reconciliation');
+
   if (!isReady || !taxpayer || !income || !tax) {
     return (
       <div className="section">
@@ -98,6 +100,36 @@ export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
             </div>
           </div>
         </div>
+
+        {reconciliation && (
+          <div className="card" style={{ marginTop: 20, borderColor: 'rgba(212,168,84,0.35)' }}>
+            <h3 className="card-title">
+              <i className="fas fa-balance-scale" style={{ marginRight: 8, color: 'var(--gold)' }} />
+              {reconciliation.title}
+            </h3>
+            <p className="card-sub">{reconciliation.summary}</p>
+            <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
+              {reconciliation.details.map((d, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '8px 0',
+                    borderBottom: '1px solid var(--border-light)'
+                  }}
+                >
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{d.label}</span>
+                  <strong style={{ fontSize: '0.85rem', textAlign: 'right' }}>
+                    {typeof d.value === 'number' ? formatINR(d.value) : d.value}
+                  </strong>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="card" style={{ marginTop: 20 }}>
           <h3 className="card-title">Working Sections</h3>

@@ -27,7 +27,7 @@ export function generatePdf(normalized: NormalizedITR, options: PdfOptions = {})
     renderSection(doc, section);
   }
 
-  renderFooter(doc);
+  renderPageDecor(doc);
 
   doc.save(fileName);
 }
@@ -156,13 +156,39 @@ function renderSection(doc: jsPDF, section: ReportSection) {
   }
 }
 
-function renderFooter(doc: jsPDF) {
+function renderPageDecor(doc: jsPDF) {
   const pages = doc.getNumberOfPages();
+  const width = doc.internal.pageSize.getWidth();
+  const height = doc.internal.pageSize.getHeight();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pdf = doc as any;
+
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
+
+    try {
+      pdf.setGState(new pdf.GState({ opacity: 0.09 }));
+    } catch {
+      /* GState unsupported - skip watermark */
+    }
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(40);
+    doc.setTextColor(GOLD[0], GOLD[1], GOLD[2]);
+    const step = 120;
+    for (let row = 0; row <= Math.ceil(height / step); row++) {
+      doc.text('CA Anshul Karwa · HISAB', width / 2, row * step + 60, { angle: 40, align: 'center' });
+    }
+    try {
+      pdf.setGState(new pdf.GState({ opacity: 1 }));
+    } catch {
+      /* ignore */
+    }
+
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
-    doc.text(`Page ${i} of ${pages}`, doc.internal.pageSize.getWidth() - 54, doc.internal.pageSize.getHeight() - 18, { align: 'right' });
+    doc.text('Made by CA Anshul Karwa', width / 2, 26, { align: 'center' });
+    doc.text('Made by CA Anshul Karwa', width / 2, height - 12, { align: 'center' });
+    doc.text(`Page ${i} of ${pages}`, width - 54, height - 18, { align: 'right' });
   }
 }

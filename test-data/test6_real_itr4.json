@@ -1,0 +1,84 @@
+{
+  "ITR": {
+    "ITR4": {
+      "PersonalInfo": {
+        "AssesseeName": {
+          "FirstName": "RAHUL",
+          "MiddleName": "",
+          "SurNameOrOrgName": "VERMA"
+        },
+        "PAN": "AMRC12182C",
+        "DOB": "15/08/1988",
+        "Address": {
+          "Line1": "Flat 12, Market Road",
+          "CityOrTownOrDistrict": "Delhi",
+          "State": "Delhi",
+          "PINCode": "110001"
+        }
+      },
+      "FilingStatus": {
+        "OptOutNewTaxRegime_Form10IEA_AY24_25": "N",
+        "No_OptOutNewTaxReg": "Y"
+      },
+      "IncomeDeductions": {
+        "ScheduleBP": {
+          "PersumptiveInc44AD": {
+            "GrsTotalTrnOver": 2954224,
+            "TotPersumptiveInc44AD": 893653
+          },
+          "FinanclPartclrOfBusiness": {
+            "CashInHand": 24000,
+            "SundryDebtors": 320000,
+            "FixedAssets": 850000,
+            "TotalAssets": 1194000,
+            "SecuredLoans": 200000,
+            "UnSecuredLoans": 100000,
+            "TotCapLiabilities": 1194000
+          }
+        },
+        "ScheduleCG": {
+          "TotCptlGain": 0
+        },
+        "ScheduleOS": {
+          "TotalSchOS": 50000
+        }
+      },
+      "TaxComputation": {
+        "GrossTaxLiability": 73322,
+        "Rebate87A": 0,
+        "EducationCess": 2933,
+        "NetTaxLiability": 76255,
+        "TotalIncome": 943653
+      },
+      "TaxPaid": {
+        "TaxesPaid": {
+          "AdvanceTax": 0,
+          "TDS": 295781,
+          "SelfAssessmentTax": 0,
+          "TotalTaxesPaid": 295781
+        }
+      },
+      "TDSonOthThanSals": {
+        "TDSonOthThanSalDtls": [
+          {
+            "TDSonOthThanSalSrNo": 1,
+            "TDSonOthThanSalDeductorTAN": "AMRC12182C",
+            "TDSonOthThanSalSecCode": "194-O",
+            "TDSonOthThanSalAmtIncomePaid": 1500000,
+            "TDSonOthThanSalTDSDeducted": 150000
+          },
+          {
+            "TDSonOthThanSalSrNo": 2,
+            "TDSonOthThanSalDeductorTAN": "DELN05816G",
+            "TDSonOthThanSalSecCode": "194-O",
+            "TDSonOthThanSalAmtIncomePaid": 1457810,
+            "TDSonOthThanSalTDSDeducted": 145781
+          }
+        ]
+      },
+      "Refund": {
+        "RefundDue": 219526
+      }
+    }
+  }
+}

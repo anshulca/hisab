@@ -4,6 +4,7 @@ import { computeTax, getStandardDeduction } from '../calculation/taxEngine';
 import { getDefaultDepreciationBlocks } from '../calculation/depreciationEngine';
 import { DEDUCTION_DEFINITIONS } from '../calculation/taxConfig';
 import { validateSchema } from './schemaValidator';
+import { parseRealItr4 } from './realItr4Parser';
 import { getProfile } from '../config/businessProfiles';
 import { parseNumber } from '../utils/currency';
 
@@ -67,10 +68,21 @@ interface RawItr {
 }
 
 export function parseItr4(raw: string): ParseResult {
-  return buildNormalized(raw);
+  let data: unknown;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    throw new Error('Invalid JSON file. Please upload a valid ITR export.');
+  }
+  return parseItr4Object(data);
 }
 
 export function parseItr4Object(data: unknown): ParseResult {
+  const root = data as Record<string, unknown>;
+  if (root?.ITR && (root.ITR as Record<string, unknown>)?.ITR4) {
+    const { normalized, issues } = parseRealItr4(data);
+    return { normalized, issues };
+  }
   return buildNormalized(JSON.stringify(data));
 }
 
