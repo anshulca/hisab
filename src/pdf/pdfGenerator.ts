@@ -90,7 +90,7 @@ function renderCover(doc: jsPDF, n: NormalizedITR) {
   doc.setFontSize(9);
   doc.setTextColor(138, 134, 144);
   doc.text('Prepared by: CA Anshul Karwa', 70, 520);
-  doc.text('hisab.github.io', 70, 538);
+  doc.text('anshulca.github.io/hisab', 70, 538);
 }
 
 function renderSection(doc: jsPDF, section: ReportSection) {

@@ -3,7 +3,7 @@
 **JSON se Computation tak.**
 By CA Anshul Karwa
 
-Live demo: [hisab.github.io](https://hisab.github.io)
+Live demo: [anshulca.github.io/hisab](https://anshulca.github.io/hisab)
 
 ## 🚀 Quick Start
 
@@ -32,8 +32,8 @@ npm run preview
 
 This repo is configured to auto-deploy to GitHub Pages via GitHub Actions (`/.github/workflows/deploy.yml`).
 
-1. Push this code to GitHub (repository must be named `hisab.github.io` for user-site hosting)
-2. In repo Settings → Pages, set source to **GitHub Actions**
+1. Push this code to GitHub (repository `hisab` under `anshulca`)
+2. In repo Settings → Pages, source is **GitHub Actions** (already set)
 3. Every push to `main` triggers a build + deploy automatically
 
 To use a custom domain (e.g. `hisab.studyfromnotes.com`), add it under Settings → Pages → Custom domain and commit a `CNAME` file.
