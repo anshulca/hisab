@@ -1,4 +1,5 @@
 import { useComputation } from '../hooks/useComputation';
+import { useComputationStore } from '../store/computationStore';
 import { ResultDashboard } from './ResultDashboard';
 import { generatePdf } from '../pdf/pdfGenerator';
 import { formatINR, compactINR } from '../utils/currency';
@@ -9,12 +10,15 @@ interface ReviewCentreProps {
 
 export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
   const { normalizedData, taxpayer, income, tax, isReady, reportSections } = useComputation();
+  const upload = useComputationStore((s) => s.upload);
 
   const handleDownload = () => {
     if (normalizedData) generatePdf(normalizedData);
   };
 
   const reconciliation = reportSections.find((s) => s.id === 'reconciliation');
+  const parsingNote = reportSections.find((s) => s.id === 'parsing');
+  const parseIssues = upload.issues ?? [];
 
   if (!isReady || !taxpayer || !income || !tax) {
     return (
@@ -40,6 +44,17 @@ export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
   return (
     <div className="section">
       <div className="container">
+        {parseIssues.length > 0 && (
+          <div className="card" style={{ marginBottom: 20, borderColor: 'rgba(212,168,84,0.45)', background: 'rgba(212,168,84,0.06)' }}>
+            <h3 className="card-title" style={{ color: 'var(--gold)' }}>
+              <i className="fas fa-exclamation-triangle" style={{ marginRight: 8 }} /> BETA Parsing Note
+            </h3>
+            <p className="card-sub" style={{ marginTop: 6 }}>
+              {parseIssues.map((issue) => issue.message).join(' ')}
+            </p>
+          </div>
+        )}
+
         <div className="section-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 14 }}>
           <div>
             <h2 className="section-title">Review Centre</h2>
@@ -125,6 +140,26 @@ export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
                   <strong style={{ fontSize: '0.85rem', textAlign: 'right' }}>
                     {typeof d.value === 'number' ? formatINR(d.value) : d.value}
                   </strong>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {parsingNote && (
+          <div className="card" style={{ marginTop: 20, borderColor: 'rgba(212,168,84,0.35)' }}>
+            <h3 className="card-title">
+              <i className="fas fa-tools" style={{ marginRight: 8, color: 'var(--gold)' }} />
+              {parsingNote.title}
+            </h3>
+            <p className="card-sub">{parsingNote.summary}</p>
+            <div style={{ display: 'grid', gap: 8, marginTop: 14 }}>
+              {parsingNote.details.map((d, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, padding: '6px 0', borderBottom: '1px solid var(--border-light)' }}>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{d.label}</span>
+                  <code style={{ fontSize: '0.7rem', textAlign: 'right', maxWidth: '65%', wordBreak: 'break-word' }}>
+                    {typeof d.value === 'number' ? formatINR(d.value) : d.value}
+                  </code>
                 </div>
               ))}
             </div>
