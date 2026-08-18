@@ -571,9 +571,19 @@ function renderDeclaration(doc: jsPDF, r: ReportData, y: number): number {
 /* ================= Footer ================= */
 
 function renderFooter(doc: jsPDF) {
+  type GStateCtor = new (opts: { opacity: number }) => unknown;
+  const gs = doc as unknown as { GState: GStateCtor };
   const pages = doc.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
+
+    doc.setGState(new gs.GState({ opacity: 0.09 }));
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(42);
+    doc.setTextColor(150, 148, 150);
+    doc.text('CA Anshul Karwa', PAGE_W / 2, PAGE_H / 2, { align: 'center', angle: 30 });
+    doc.setGState(new gs.GState({ opacity: 1 }));
+
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.5);
     doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
