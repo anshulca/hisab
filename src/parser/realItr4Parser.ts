@@ -6,7 +6,7 @@ import type {
   Taxpayer,
   ValidationIssue
 } from '../types';
-import { computeRealRegimeTax } from '../calculation/taxEngine';
+import { computeRealRegimeTax, getAYSlabSet } from '../calculation/taxEngine';
 import { parseNumber } from '../utils/currency';
 
 export interface ReconciliationReport {
@@ -86,6 +86,23 @@ export function parseRealItr4(input: unknown): {
     issues.push({ path: 'PersonalInfo.PAN', message: 'PAN format looks unusual.', severity: 'warning' });
   }
 
+  const verification = (itr4.Verification ?? {}) as Record<string, unknown>;
+  const declaration = (verification.Declaration ?? {}) as Record<string, unknown>;
+  const fatherName = String(declaration.FatherName ?? '').replace(/\s+/g, ' ').trim();
+  const dob = String(personalInfo.DOB ?? '');
+  const aadhaar = String(personalInfo.AadhaarCardNo ?? '');
+  const mobile = String(address.MobileNo ?? address.MobileNumber ?? '');
+  const email = String(address.EmailAddress ?? '');
+  const addressParts = [
+    String(address.ResidenceNo ?? ''),
+    String(address.RoadOrStreet ?? ''),
+    String(address.LocalityOrArea ?? ''),
+    String(address.CityOrTownOrDistrict ?? ''),
+    STATE_CODES[String(address.StateCode ?? '').trim()] ?? '',
+    String(address.PinCode ?? address.PINCode ?? '')
+  ].filter(Boolean);
+  const fullAddress = addressParts.join(', ').replace(/\s+/g, ' ').trim();
+
   /* ---------------- Assessment Year ---------------- */
   const formItr4 = (itr4.Form_ITR4 ?? {}) as Record<string, unknown>;
   const ayEnd = parseInt(String(formItr4.AssessmentYear ?? personalInfo.AssessmentYear ?? ''), 10);
@@ -149,6 +166,15 @@ export function parseRealItr4(input: unknown): {
 
   const otherIncomeList = ((incomeDeductions.OthersInc as Record<string, unknown>)?.OthersIncDtlsOthSrc ?? []) as Array<Record<string, unknown>>;
 
+  /* ---------------- 44AD splits (E1a/E1b, 6%/8%) ---------------- */
+  const turnoverBanking = pick(presumptive44ad, ['GrsTrnOverBank', 'GrsturnoverBanking', 'TurnOverBanking']);
+  const turnoverCashRaw = pick(presumptive44ad, ['GrsTrnOverAnyOthMode', 'GrsturnoverAnyOthMode', 'TurnOverCash']);
+  const declaredBanking = pick(presumptive44ad, ['PersumptiveInc44AD6Per', 'PresumptiveInc44AD6Per', 'Declared44AD6Per']);
+  const declaredCash = pick(presumptive44ad, ['PersumptiveInc44AD8Per', 'PresumptiveInc44AD8Per', 'Declared44AD8Per']);
+  const minBanking6 = Math.round(turnoverBanking * 0.06);
+  const minCash8 = Math.round(turnoverCashRaw * 0.08);
+  const npPercent = turnover > 0 ? (businessIncome / turnover) * 100 : 0;
+
   /* ---------------- Tax computation block ---------------- */
   const taxComp = (itr4.TaxComputation ?? {}) as Record<string, unknown>;
   const officialTotalIncome = pickFromList(
@@ -177,6 +203,27 @@ export function parseRealItr4(input: unknown): {
 
   const refund = (itr4.Refund ?? {}) as Record<string, unknown>;
   const refundDue = pick(refund, ['RefundDue', 'Refund']);
+  const bankDetailsRaw = ((refund.BankAccountDtls as Record<string, unknown>)?.AddtnlBankDetails ?? []) as Array<Record<string, unknown>>;
+  const primaryBank = bankDetailsRaw.find((b) => String(b.UseForRefund ?? '').toLowerCase() === 'true') ?? bankDetailsRaw[0] ?? {};
+  const tcsTotal = pick(taxesPaid, ['TCS', 'TotalTCS']);
+
+  /* ---------------- Interest u/s 234A/B/C & other paid ---------------- */
+  const intrstPay = (taxComp.IntrstPay ?? {}) as Record<string, unknown>;
+  const us234A = pick(intrstPay, ['IntrstPayUs234A']);
+  const us234B = pick(intrstPay, ['IntrstPayUs234B']);
+  const us234C = pick(intrstPay, ['IntrstPayUs234C']);
+  const lateFee234F = pick(intrstPay, ['LateFilingFee234F']);
+  const totalWithInterest = pick(taxComp, ['TotTaxPlusIntrstPay']);
+  const totalTaxesPaid = pick(taxesPaid, ['TotalTaxesPaid']);
+  const balancePayable = pick(taxPaid, ['BalTaxPayable']);
+
+  /* ---------------- Other sources breakdown ---------------- */
+  const otherSourcesBreakdown = otherIncomeList
+    .map((d) => ({
+      label: String(d.OthSrcOthNatOfInc ?? d.OthSrcNatureDesc ?? 'Other Income'),
+      amount: parseNumber(d.OthSrcOthAmount)
+    }))
+    .filter((x) => x.amount > 0);
 
   /* ---------------- Chapter VI-A deductions ---------------- */
   const via = (incomeDeductions.UsrDeductUndChapVIA ?? incomeDeductions.DeductUndChapVIA ?? {}) as Record<string, unknown>;
@@ -216,7 +263,7 @@ export function parseRealItr4(input: unknown): {
   };
 
   /* ---------------- Tax computation ---------------- */
-  const manualTax = computeRealRegimeTax(totalIncome, regime, regime === 'old' ? totalDeductions : 0);
+  const manualTax = computeRealRegimeTax(totalIncome, regime, regime === 'old' ? totalDeductions : 0, assessmentYear);
 
   const taxComputation = {
     regime,
@@ -235,6 +282,25 @@ export function parseRealItr4(input: unknown): {
     netTaxPayable: Math.max(0, manualTax.totalPayable - advanceTax - tdsTotal - selfAssessmentTax),
     effectiveRate: totalIncome > 0 ? (manualTax.totalPayable / totalIncome) * 100 : 0
   };
+
+  /* ---------------- Slab rows (mirror reference sheet Part D) ---------------- */
+  const slabRows: Array<{ from: number; to: number; rate: number; tax: number }> = [];
+  const slabs = getAYSlabSet(assessmentYear);
+  const slab = slabs[regime === 'new' ? 'newRegime' : 'oldRegime'];
+  {
+    let prevCap = 0;
+    let remaining = manualTax.taxableIncome;
+    for (const s of slab) {
+      const lower = prevCap;
+      const upper = s.upTo === Infinity ? Infinity : s.upTo;
+      const taxableInSlab = Math.min(Math.max(0, remaining), upper - lower);
+      const taxInSlab = Math.round(taxableInSlab * s.rate);
+      remaining -= taxableInSlab;
+      slabRows.push({ from: lower, to: upper, rate: s.rate * 100, tax: taxInSlab });
+      prevCap = upper;
+      if (remaining <= 0) break;
+    }
+  }
 
   /* ---------------- Reconciliation ---------------- */
   const profitMargin = turnover > 0 ? (businessIncome / turnover) * 100 : 0;
@@ -311,7 +377,18 @@ export function parseRealItr4(input: unknown): {
   }
 
   /* ---------------- Taxpayer ---------------- */
-  const businessName = (scheduleBP.NatOfBus44AD as Record<string, unknown> | undefined)?.NameOfBusiness;
+  const natOfBusRaw = scheduleBP.NatOfBus44AD;
+  const natOfBus = Array.isArray(natOfBusRaw)
+    ? (natOfBusRaw[0] as Record<string, unknown> ?? {})
+    : ((natOfBusRaw as Record<string, unknown> | undefined) ?? {});
+  const businessName = String(natOfBus.NameOfBusiness ?? '');
+  const businessCode = String(natOfBus.CodeAD ?? '');
+  const natureOfBusiness = String(natOfBus.Description ?? '');
+  const retFileSec = parseInt(String(filingStatus.ReturnFileSec ?? ''), 10);
+  const filingSection = retFileSec === 11 ? '139(1) – On Time' : retFileSec > 0 ? `139(1)` : '';
+  const residentStatus = String(personalInfo.ResidentStatus ?? '').replace(/\s+/g, ' ').trim() || (personalInfo.Status ? String(personalInfo.Status) : 'Individual');
+  const refundAmount = refundDue > 0 ? refundDue : 0;
+
   const taxpayer: Taxpayer = {
     name,
     pan,
@@ -322,7 +399,23 @@ export function parseRealItr4(input: unknown): {
     city: String(address.CityOrTownOrDistrict ?? address.City ?? '').split(',')[0].trim(),
     state: STATE_CODES[String(address.StateCode ?? '').trim()] ?? '',
     pinCode: String(address.PinCode ?? address.PINCode ?? ''),
-    profession
+    profession,
+    fatherName,
+    dob,
+    aadhaar,
+    mobile: mobile ? (mobile.startsWith('+') ? mobile : `+91-${mobile}`) : '',
+    email,
+    residentStatus,
+    filingSection,
+    address: fullAddress,
+    businessName,
+    businessCode,
+    natureOfBusiness,
+    bankName: String(primaryBank.BankName ?? ''),
+    accountNo: String(primaryBank.BankAccountNo ?? ''),
+    ifsc: String(primaryBank.IFSCCode ?? ''),
+    accountType: String(primaryBank.AccountType ?? ''),
+    refundDue: refundAmount
   };
 
   /* ---------------- Report sections ---------------- */
@@ -439,7 +532,35 @@ export function parseRealItr4(input: unknown): {
     depreciation: { totalDepreciation: 0, assets: [] },
     taxComputation,
     reportSections,
-    computedAt: new Date().toISOString()
+    computedAt: new Date().toISOString(),
+    detail: {
+      turnoverBanking,
+      turnoverCash: turnoverCashRaw,
+      declaredBanking,
+      declaredCash,
+      minBanking6,
+      minCash8,
+      npPercent,
+      otherSourcesBreakdown,
+      taxesPaid: {
+        advanceTax,
+        selfAssessmentTax,
+        tds: tdsTotal,
+        tcs: tcsTotal,
+        total: totalTaxesPaid,
+        balancePayable
+      },
+      interest: {
+        us234A,
+        us234B,
+        us234C,
+        lateFee234F,
+        totalWithInterest
+      },
+      slabRows,
+      ackNumber: String(taxComp.AckNumber ?? formItr4.AckNumber ?? '') || '—',
+      filingDate: String(taxComp.FilingDate ?? formItr4.FilingDate ?? '') || '—'
+    }
   };
 
   return { normalized, issues, reconciliation };

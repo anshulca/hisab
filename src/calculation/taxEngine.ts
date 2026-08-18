@@ -1,4 +1,5 @@
 import type { DeductionItem, TaxComputation, TaxRegime } from '../types';
+import type { Slab } from './taxConfig';
 import { CESS_RATE, STANDARD_DEDUCTION, STANDARD_DEDUCTION_NEW, getRebateConfig, getSlabs, getSurchargeRate } from './taxConfig';
 
 export interface TaxEngineInput {
@@ -75,7 +76,10 @@ export function getStandardDeduction(regime: TaxRegime): number {
 }
 
 /* ==========================================================
-   Real ITR-4 (raw.ITR.ITR4) regime calculator - AY 2025-26 slabs
+   Real ITR-4 (raw.ITR.ITR4) regime calculator
+   Auto-detects slab set from Assessment Year:
+   - AY 2026-27 & later -> new 4/8/12/16/20/24L slabs (60k rebate)
+   - AY 2025-26 & earlier -> 3/6/9/12/15L slabs (25k rebate)
    New Regime (115BAC) vs Old Regime, as per CA logic
    ========================================================== */
 export interface RealRegimeTaxResult {
@@ -88,36 +92,94 @@ export interface RealRegimeTaxResult {
   totalPayable: number;
 }
 
-export function computeRealRegimeTax(income: number, regime: TaxRegime, deductionsTotal = 0): RealRegimeTaxResult {
+interface AYSlabSet {
+  newRegime: Slab[];
+  oldRegime: Slab[];
+  newRebate: { threshold: number; amount: number };
+  oldRebate: { threshold: number; amount: number };
+}
+
+const AY_2025_26_SLABS: AYSlabSet = {
+  newRegime: [
+    { upTo: 300000, rate: 0 },
+    { upTo: 600000, rate: 0.05 },
+    { upTo: 900000, rate: 0.1 },
+    { upTo: 1200000, rate: 0.15 },
+    { upTo: 1500000, rate: 0.2 },
+    { upTo: Infinity, rate: 0.3 }
+  ],
+  oldRegime: [
+    { upTo: 250000, rate: 0 },
+    { upTo: 500000, rate: 0.05 },
+    { upTo: 1000000, rate: 0.2 },
+    { upTo: Infinity, rate: 0.3 }
+  ],
+  newRebate: { threshold: 700000, amount: 25000 },
+  oldRebate: { threshold: 500000, amount: 12500 }
+};
+
+const AY_2026_27_SLABS: AYSlabSet = {
+  newRegime: [
+    { upTo: 400000, rate: 0 },
+    { upTo: 800000, rate: 0.05 },
+    { upTo: 1200000, rate: 0.1 },
+    { upTo: 1600000, rate: 0.15 },
+    { upTo: 2000000, rate: 0.2 },
+    { upTo: 2400000, rate: 0.25 },
+    { upTo: Infinity, rate: 0.3 }
+  ],
+  oldRegime: [
+    { upTo: 250000, rate: 0 },
+    { upTo: 500000, rate: 0.05 },
+    { upTo: 1000000, rate: 0.2 },
+    { upTo: Infinity, rate: 0.3 }
+  ],
+  newRebate: { threshold: 1200000, amount: 60000 },
+  oldRebate: { threshold: 500000, amount: 12500 }
+};
+
+export function getAYSlabSet(assessmentYear: string): AYSlabSet {
+  const startYear = parseInt(String(assessmentYear).split('-')[0] ?? '2025', 10) || 2025;
+  return startYear >= 2026 ? AY_2026_27_SLABS : AY_2025_26_SLABS;
+}
+
+function taxForSlabs(income: number, slabs: Slab[]): number {
+  let tax = 0;
+  let previousLimit = 0;
+  let remaining = income;
+  for (const slab of slabs) {
+    const taxableInSlab = Math.min(Math.max(0, remaining), slab.upTo - previousLimit);
+    tax += taxableInSlab * slab.rate;
+    remaining -= taxableInSlab;
+    previousLimit = slab.upTo;
+    if (remaining <= 0) break;
+  }
+  return tax;
+}
+
+export function computeRealRegimeTax(income: number, regime: TaxRegime, deductionsTotal = 0, assessmentYear = '2025-26'): RealRegimeTaxResult {
+  const slabs = getAYSlabSet(assessmentYear);
   let tax = 0;
   let rebate = 0;
   let taxableIncome = income;
 
   if (regime === 'new') {
     // New Tax Regime (Section 115BAC) - no standard deduction for business income
-    if (income <= 300000) tax = 0;
-    else if (income <= 600000) tax = (income - 300000) * 0.05;
-    else if (income <= 900000) tax = 15000 + (income - 600000) * 0.10;
-    else if (income <= 1200000) tax = 45000 + (income - 900000) * 0.15;
-    else if (income <= 1500000) tax = 90000 + (income - 1200000) * 0.20;
-    else tax = 150000 + (income - 1500000) * 0.30;
+    tax = taxForSlabs(income, slabs.newRegime);
 
-    // Rebate 87A (New Regime, up to 7 lakhs)
-    if (income <= 700000) {
-      rebate = Math.min(tax, 25000);
+    // Rebate 87A (New Regime)
+    if (income <= slabs.newRebate.threshold) {
+      rebate = Math.min(tax, slabs.newRebate.amount);
       tax = tax - rebate;
     }
   } else {
     // Old Tax Regime - Chapter VI-A deductions allowed
     taxableIncome = Math.max(0, income - deductionsTotal);
-    if (taxableIncome <= 250000) tax = 0;
-    else if (taxableIncome <= 500000) tax = (taxableIncome - 250000) * 0.05;
-    else if (taxableIncome <= 1000000) tax = 12500 + (taxableIncome - 500000) * 0.20;
-    else tax = 112500 + (taxableIncome - 1000000) * 0.30;
+    tax = taxForSlabs(taxableIncome, slabs.oldRegime);
 
     // Rebate 87A (Old Regime, up to 5 lakhs)
-    if (taxableIncome <= 500000) {
-      rebate = Math.min(tax, 12500);
+    if (taxableIncome <= slabs.oldRebate.threshold) {
+      rebate = Math.min(tax, slabs.oldRebate.amount);
       tax = tax - rebate;
     }
   }

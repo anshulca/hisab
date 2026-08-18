@@ -2,7 +2,11 @@ import { useComputation } from '../hooks/useComputation';
 import { formatINR } from '../utils/currency';
 import { useState } from 'react';
 
-export function ProfitAndLossWorking() {
+interface ProfitAndLossWorkingProps {
+  onBack?: () => void;
+}
+
+export function ProfitAndLossWorking({ onBack }: ProfitAndLossWorkingProps) {
   const { pnl, income, expenses, isReady, taxpayer } = useComputation();
   const [showDetail, setShowDetail] = useState(false);
 
@@ -33,9 +37,12 @@ export function ProfitAndLossWorking() {
               {taxpayer?.name ?? ''} · Reconstructed from the computation
             </p>
           </div>
-          <button className="btn-ghost" onClick={() => setShowDetail((v) => !v)}>
-            {showDetail ? 'Hide' : 'Show'} detail
-          </button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {onBack && <button className="btn-ghost" onClick={onBack}>← Back</button>}
+            <button className="btn-ghost" onClick={() => setShowDetail((v) => !v)}>
+              {showDetail ? 'Hide' : 'Show'} detail
+            </button>
+          </div>
         </div>
 
         <div className="stat-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 20 }}>

@@ -7,6 +7,10 @@ export function formatINR(amount: number, options: { noDecimals?: boolean; sign?
   return `${sign}₹${formatted}.00`;
 }
 
+export function formatCurrency(amount: number): string {
+  return formatINR(amount);
+}
+
 export function formatLakhs(amount: number): string {
   const lakhs = amount / 100000;
   return `${lakhs.toLocaleString('en-IN', { maximumFractionDigits: 2 })} L`;

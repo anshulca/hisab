@@ -13,6 +13,22 @@ export interface Taxpayer {
   state?: string;
   pinCode?: string;
   profession?: string;
+  fatherName?: string;
+  dob?: string;
+  aadhaar?: string;
+  mobile?: string;
+  email?: string;
+  residentStatus?: string;
+  filingSection?: string;
+  address?: string;
+  businessName?: string;
+  businessCode?: string;
+  natureOfBusiness?: string;
+  bankName?: string;
+  accountNo?: string;
+  ifsc?: string;
+  accountType?: string;
+  refundDue?: number;
 }
 
 export interface IncomeSource {
@@ -107,6 +123,34 @@ export interface NormalizedITR {
   taxComputation: TaxComputation;
   reportSections: ReportSection[];
   computedAt: string;
+  detail?: {
+    turnoverBanking: number;
+    turnoverCash: number;
+    declaredBanking: number;
+    declaredCash: number;
+    minBanking6: number;
+    minCash8: number;
+    npPercent: number;
+    otherSourcesBreakdown: Array<{ label: string; amount: number }>;
+    taxesPaid: {
+      advanceTax: number;
+      selfAssessmentTax: number;
+      tds: number;
+      tcs: number;
+      total: number;
+      balancePayable: number;
+    };
+    interest: {
+      us234A: number;
+      us234B: number;
+      us234C: number;
+      lateFee234F: number;
+      totalWithInterest: number;
+    };
+    slabRows: Array<{ from: number; to: number; rate: number; tax: number }>;
+    ackNumber: string;
+    filingDate: string;
+  };
 }
 
 export interface PnLStatement {

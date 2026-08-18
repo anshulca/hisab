@@ -8,6 +8,8 @@ import { FinalHisabCheck } from './components/FinalHisabCheck';
 import { DepreciationScheduleEnhanced } from './components/DepreciationScheduleEnhanced';
 import { IncomeBreakdownEnhanced } from './components/IncomeBreakdownEnhanced';
 import { Workspace } from './components/Workspace';
+import { CompareWorkspace } from './components/CompareWorkspace';
+import { ReportViewer } from './components/ReportViewer';
 import { Footer } from './components/Footer';
 
 function App() {
@@ -28,20 +30,25 @@ function App() {
         return <Landing onGenerate={() => setActiveSection('app')} />;
       case 'app':
         return <Workspace onNavigate={setActiveSection} />;
+      case 'compare':
+        return <CompareWorkspace onNavigate={setActiveSection} />;
       case 'review':
         return <ReviewCentre onNavigate={setActiveSection} />;
+      case 'report':
+        return <ReportViewer onBack={() => setActiveSection('review')} />;
       case 'income':
         return store.normalizedData ? (
-          <IncomeBreakdownEnhanced incomeData={store.normalizedData.incomeBreakdown} />
+          <IncomeBreakdownEnhanced incomeData={store.normalizedData.incomeBreakdown} onBack={() => setActiveSection('review')} />
         ) : <div>No income data</div>;
       case 'pnl':
-        return <ProfitAndLossWorking />;
+        return <ProfitAndLossWorking onBack={() => setActiveSection('review')} />;
       case 'depreciation':
         return store.normalizedData ? (
           <DepreciationScheduleEnhanced
             initialAssets={store.depreciationAssets}
             onUpdate={store.updateDepreciation}
             assessmentYear={store.normalizedData.taxpayer.assessmentYear}
+            onBack={() => setActiveSection('review')}
           />
         ) : <div>No data</div>;
       case 'hisabCheck':

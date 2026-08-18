@@ -4,9 +4,10 @@ import { formatINR } from '../utils/currency';
 
 interface IncomeBreakdownEnhancedProps {
   incomeData: IncomeBreakdown;
+  onBack?: () => void;
 }
 
-export function IncomeBreakdownEnhanced({ incomeData }: IncomeBreakdownEnhancedProps) {
+export function IncomeBreakdownEnhanced({ incomeData, onBack }: IncomeBreakdownEnhancedProps) {
   const [showPercent, setShowPercent] = useState(false);
 
   return (
@@ -17,9 +18,12 @@ export function IncomeBreakdownEnhanced({ incomeData }: IncomeBreakdownEnhancedP
             <h2 className="section-title">Income Breakdown</h2>
             <p className="section-sub">Head-wise composition of gross total income.</p>
           </div>
-          <button className="btn-ghost" onClick={() => setShowPercent((v) => !v)}>
-            {showPercent ? 'Show amounts' : 'Show %'}
-          </button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {onBack && <button className="btn-ghost" onClick={onBack}>← Back</button>}
+            <button className="btn-ghost" onClick={() => setShowPercent((v) => !v)}>
+              {showPercent ? 'Show amounts' : 'Show %'}
+            </button>
+          </div>
         </div>
 
         <div className="card">

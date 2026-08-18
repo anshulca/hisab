@@ -6,11 +6,12 @@ interface DepreciationScheduleEnhancedProps {
   initialAssets: DepreciationAsset[];
   onUpdate: (assets: DepreciationAsset[]) => void;
   assessmentYear?: string;
+  onBack?: () => void;
 }
 
 const NEW_BLOCK_RATE = 0.15;
 
-export function DepreciationScheduleEnhanced({ initialAssets, onUpdate, assessmentYear }: DepreciationScheduleEnhancedProps) {
+export function DepreciationScheduleEnhanced({ initialAssets, onUpdate, assessmentYear, onBack }: DepreciationScheduleEnhancedProps) {
   const [assets, setAssets] = useState<DepreciationAsset[]>(() => initialAssets.map((a) => ({ ...a })));
   const [dirty, setDirty] = useState(false);
 
@@ -78,6 +79,7 @@ export function DepreciationScheduleEnhanced({ initialAssets, onUpdate, assessme
             </p>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
+            {onBack && <button className="btn-ghost" onClick={onBack}>← Back</button>}
             <button className="btn-ghost" onClick={addBlock}>+ Add Block</button>
             <button className="btn-gold" onClick={save} disabled={!dirty}>Save Changes</button>
           </div>

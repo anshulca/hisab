@@ -4,12 +4,14 @@ import { parseItr4 } from '../parser/itr4Parser';
 
 export interface ComputationStoreState {
   normalizedData: NormalizedITR | null;
+  prevData: NormalizedITR | null;
   depreciationAssets: DepreciationAsset[];
   taxpayer: Taxpayer | null;
   upload: FileUploadState;
   isFinalized: boolean;
   setUpload: (upload: Partial<FileUploadState>) => void;
   processRawText: (rawText: string, fileName: string) => void;
+  processPrevRawText: (rawText: string, fileName: string) => { ok: boolean; error?: string };
   updateDepreciation: (assets: DepreciationAsset[]) => void;
   finalize: () => void;
   reset: () => void;
@@ -24,6 +26,7 @@ const initialUpload: FileUploadState = {
 
 export const useComputationStore = create<ComputationStoreState>((set) => ({
   normalizedData: null,
+  prevData: null,
   depreciationAssets: [],
   taxpayer: null,
   upload: initialUpload,
@@ -63,6 +66,17 @@ export const useComputationStore = create<ComputationStoreState>((set) => ({
     }
   },
 
+  processPrevRawText: (rawText, _fileName) => {
+    try {
+      const { normalized } = parseItr4(rawText);
+      set({ prevData: normalized });
+      return { ok: true };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Invalid JSON file. Please upload a valid ITR export.';
+      return { ok: false, error: message };
+    }
+  },
+
   updateDepreciation: (assets) =>
     set((state) => {
       if (!state.normalizedData) return {};
@@ -81,6 +95,7 @@ export const useComputationStore = create<ComputationStoreState>((set) => ({
   reset: () =>
     set({
       normalizedData: null,
+      prevData: null,
       depreciationAssets: [],
       taxpayer: null,
       upload: initialUpload,

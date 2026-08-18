@@ -29,6 +29,12 @@ export function Workspace({ onNavigate }: WorkspaceProps) {
         </div>
         <div style={{ maxWidth: 700, margin: '34px auto 70px' }}>
           <UploadCard onGenerated={() => onNavigate('review')} />
+          <div style={{ textAlign: 'center', marginTop: 20 }}>
+            <button className="btn-ghost" onClick={() => onNavigate('compare')} style={{ width: '100%' }}>
+              <i className="fas fa-balance-scale" style={{ marginRight: 8, color: 'var(--gold)' }} />
+              Compare 2 Years (Prev + Curr JSONs) →
+            </button>
+          </div>
         </div>
       </div>
     </div>

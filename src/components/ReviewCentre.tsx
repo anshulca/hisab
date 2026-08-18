@@ -68,7 +68,7 @@ export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
           </div>
         </div>
 
-        <ResultDashboard onViewReport={() => onNavigate('review')} />
+        <ResultDashboard onViewReport={() => onNavigate('report')} />
 
         <div className="stat-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginTop: 20 }}>
           {quickFacts.map((fact) => (
@@ -174,6 +174,7 @@ export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
               ['income', 'Income Breakdown'],
               ['pnl', 'P&L Working'],
               ['depreciation', 'Depreciation Schedule'],
+              ['compare', 'Compare 2 Years'],
               ['hisabCheck', 'Final Hisab Check']
             ].map(([key, label]) => (
               <button key={key} className="btn-ghost" onClick={() => onNavigate(key)} style={{ textAlign: 'center' }}>
