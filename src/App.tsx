@@ -3,6 +3,9 @@ import { useComputationStore } from './store/computationStore';
 import { Header } from './components/Header';
 import { Landing } from './components/Landing';
 import { ReviewCentre } from './components/ReviewCentre';
+import { I1ReviewCentre } from './components/I1ReviewCentre';
+import { I1ReportViewer } from './components/I1ReportViewer';
+import { I1FinalHisabCheck } from './components/I1FinalHisabCheck';
 import { ProfitAndLossWorking } from './components/ProfitAndLossWorking';
 import { FinalHisabCheck } from './components/FinalHisabCheck';
 import { DepreciationScheduleEnhanced } from './components/DepreciationScheduleEnhanced';
@@ -33,9 +36,17 @@ function App() {
       case 'compare':
         return <CompareWorkspace onNavigate={setActiveSection} />;
       case 'review':
-        return <ReviewCentre onNavigate={setActiveSection} />;
+        return store.itrForm === 'ITR1' ? (
+          <I1ReviewCentre onNavigate={setActiveSection} />
+        ) : (
+          <ReviewCentre onNavigate={setActiveSection} />
+        );
       case 'report':
-        return <ReportViewer onBack={() => setActiveSection('review')} />;
+        return store.itrForm === 'ITR1' ? (
+          <I1ReportViewer onBack={() => setActiveSection('review')} />
+        ) : (
+          <ReportViewer onBack={() => setActiveSection('review')} />
+        );
       case 'income':
         return store.normalizedData ? (
           <IncomeBreakdownEnhanced incomeData={store.normalizedData.incomeBreakdown} onBack={() => setActiveSection('review')} />
@@ -52,7 +63,9 @@ function App() {
           />
         ) : <div>No data</div>;
       case 'hisabCheck':
-        return (
+        return store.itrForm === 'ITR1' ? (
+          <I1FinalHisabCheck onNavigate={setActiveSection} onFinalize={handleFinalize} />
+        ) : (
           <FinalHisabCheck
             onNavigate={setActiveSection}
             onFinalize={handleFinalize}

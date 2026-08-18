@@ -1,0 +1,405 @@
+[
+ {
+  "file": "test1_44ad_business.json",
+  "form": "ITR4",
+  "name": "Rajesh Kumar Traders",
+  "pan": "ABCDE1234F",
+  "assessmentYear": "2024-25",
+  "regime": "new",
+  "income": {
+   "businessIncome": 400000,
+   "capitalGains": 0,
+   "otherSources": 85000,
+   "total": 485000,
+   "grossReceipts": 5000000
+  },
+  "deductions": [],
+  "totalDeductions": 50000,
+  "taxableIncome": 435000,
+  "taxBeforeCess": 6750,
+  "rebate": 6750,
+  "cess": 0,
+  "totalTax": 0,
+  "tds": 24000,
+  "advanceTax": 18000,
+  "selfAssessmentTax": 0,
+  "netTaxPayable": 0,
+  "detail": {
+   "taxesPaid": {},
+   "interest": {},
+   "turnoverBanking": 0,
+   "turnoverCash": 0,
+   "declaredBanking": 0,
+   "declaredCash": 0
+  },
+  "reportIds": [
+   "income",
+   "expenses",
+   "depreciation",
+   "tax",
+   "pnl"
+  ],
+  "issues": []
+ },
+ {
+  "file": "test2_44ada_professional.json",
+  "form": "ITR4",
+  "name": "Dr. Meera Sharma",
+  "pan": "FGHIJ5678K",
+  "assessmentYear": "2024-25",
+  "regime": "new",
+  "income": {
+   "businessIncome": 1200000,
+   "capitalGains": 75000,
+   "otherSources": 42000,
+   "total": 1317000,
+   "grossReceipts": 2400000
+  },
+  "deductions": [],
+  "totalDeductions": 50000,
+  "taxableIncome": 1267000,
+  "taxBeforeCess": 103400,
+  "rebate": 0,
+  "cess": 4136,
+  "totalTax": 107536,
+  "tds": 60000,
+  "advanceTax": 0,
+  "selfAssessmentTax": 0,
+  "netTaxPayable": 47536,
+  "detail": {
+   "taxesPaid": {},
+   "interest": {},
+   "turnoverBanking": 0,
+   "turnoverCash": 0,
+   "declaredBanking": 0,
+   "declaredCash": 0
+  },
+  "reportIds": [
+   "income",
+   "expenses",
+   "depreciation",
+   "tax",
+   "pnl"
+  ],
+  "issues": []
+ },
+ {
+  "file": "test3_business_other.json",
+  "form": "ITR4",
+  "name": "Amit & Sons Enterprises",
+  "pan": "KLMNO9012P",
+  "assessmentYear": "2024-25",
+  "regime": "new",
+  "income": {
+   "businessIncome": 720000,
+   "capitalGains": 0,
+   "otherSources": 95000,
+   "total": 815000,
+   "grossReceipts": 12000000
+  },
+  "deductions": [],
+  "totalDeductions": 50000,
+  "taxableIncome": 765000,
+  "taxBeforeCess": 31500,
+  "rebate": 0,
+  "cess": 1260,
+  "totalTax": 32760,
+  "tds": 30000,
+  "advanceTax": 50000,
+  "selfAssessmentTax": 0,
+  "netTaxPayable": 0,
+  "detail": {
+   "taxesPaid": {},
+   "interest": {},
+   "turnoverBanking": 0,
+   "turnoverCash": 0,
+   "declaredBanking": 0,
+   "declaredCash": 0
+  },
+  "reportIds": [
+   "income",
+   "expenses",
+   "depreciation",
+   "tax",
+   "pnl"
+  ],
+  "issues": []
+ },
+ {
+  "file": "test4_old_regime.json",
+  "form": "ITR4",
+  "name": "Sunil Gupta",
+  "pan": "QRSTU3456V",
+  "assessmentYear": "2024-25",
+  "regime": "old",
+  "income": {
+   "businessIncome": 360000,
+   "capitalGains": 120000,
+   "otherSources": 65000,
+   "total": 545000,
+   "grossReceipts": 4500000
+  },
+  "deductions": [
+   {
+    "code": "80C",
+    "amount": 150000
+   },
+   {
+    "code": "80CCD1B",
+    "amount": 50000
+   },
+   {
+    "code": "80D",
+    "amount": 25000
+   },
+   {
+    "code": "80TTA",
+    "amount": 10000
+   },
+   {
+    "code": "80E",
+    "amount": 60000
+   }
+  ],
+  "totalDeductions": 345000,
+  "taxableIncome": 200000,
+  "taxBeforeCess": 0,
+  "rebate": 0,
+  "cess": 0,
+  "totalTax": 0,
+  "tds": 18000,
+  "advanceTax": 12000,
+  "selfAssessmentTax": 0,
+  "netTaxPayable": 0,
+  "detail": {
+   "taxesPaid": {},
+   "interest": {},
+   "turnoverBanking": 0,
+   "turnoverCash": 0,
+   "declaredBanking": 0,
+   "declaredCash": 0
+  },
+  "reportIds": [
+   "income",
+   "expenses",
+   "depreciation",
+   "tax",
+   "pnl"
+  ],
+  "issues": []
+ },
+ {
+  "file": "test5_tax_payable.json",
+  "form": "ITR4",
+  "name": "Vikram Malhotra",
+  "pan": "VWXYZ7890W",
+  "assessmentYear": "2024-25",
+  "regime": "new",
+  "income": {
+   "businessIncome": 4750000,
+   "capitalGains": 250000,
+   "otherSources": 180000,
+   "total": 5180000,
+   "grossReceipts": 9500000
+  },
+  "deductions": [
+   {
+    "code": "80CCD2",
+    "amount": 70000
+   }
+  ],
+  "totalDeductions": 120000,
+  "taxableIncome": 5060000,
+  "taxBeforeCess": 1218000,
+  "rebate": 0,
+  "cess": 53592,
+  "totalTax": 1393392,
+  "tds": 90000,
+  "advanceTax": 150000,
+  "selfAssessmentTax": 35000,
+  "netTaxPayable": 1118392,
+  "detail": {
+   "taxesPaid": {},
+   "interest": {},
+   "turnoverBanking": 0,
+   "turnoverCash": 0,
+   "declaredBanking": 0,
+   "declaredCash": 0
+  },
+  "reportIds": [
+   "income",
+   "expenses",
+   "depreciation",
+   "tax",
+   "pnl"
+  ],
+  "issues": []
+ },
+ {
+  "file": "test6_real_itr4.json",
+  "form": "ITR4",
+  "name": "RAHUL VERMA",
+  "pan": "AMRC12182C",
+  "assessmentYear": "2024-25",
+  "regime": "new",
+  "income": {
+   "businessIncome": 893653,
+   "capitalGains": 0,
+   "otherSources": 0,
+   "total": 893653,
+   "grossReceipts": 2954224
+  },
+  "deductions": [],
+  "totalDeductions": 0,
+  "taxableIncome": 893653,
+  "taxBeforeCess": 44365,
+  "rebate": 0,
+  "cess": 1775,
+  "totalTax": 46140,
+  "tds": 295781,
+  "advanceTax": 0,
+  "selfAssessmentTax": 0,
+  "netTaxPayable": 0,
+  "detail": {
+   "taxesPaid": {
+    "advanceTax": 0,
+    "selfAssessmentTax": 0,
+    "tds": 295781,
+    "tcs": 0,
+    "total": 295781,
+    "balancePayable": 0
+   },
+   "interest": {
+    "us234A": 0,
+    "us234B": 0,
+    "us234C": 0,
+    "lateFee234F": 0,
+    "totalWithInterest": 0
+   },
+   "turnoverBanking": 0,
+   "turnoverCash": 0,
+   "declaredBanking": 0,
+   "declaredCash": 0
+  },
+  "reportIds": [
+   "cover",
+   "income",
+   "reconciliation",
+   "balancesheet",
+   "tax"
+  ],
+  "issues": [
+   "PAN format looks unusual."
+  ]
+ },
+ {
+  "file": "test7_shivam_44ad.json",
+  "form": "ITR4",
+  "name": "SHIVAM KUMAR SHARMA",
+  "pan": "QBCPS5049N",
+  "assessmentYear": "2024-25",
+  "regime": "new",
+  "income": {
+   "businessIncome": 893653,
+   "capitalGains": 0,
+   "otherSources": 12804,
+   "total": 906457,
+   "grossReceipts": 2954224
+  },
+  "deductions": [],
+  "totalDeductions": 0,
+  "taxableIncome": 906457,
+  "taxBeforeCess": 45969,
+  "rebate": 0,
+  "cess": 1839,
+  "totalTax": 47808,
+  "tds": 295781,
+  "advanceTax": 0,
+  "selfAssessmentTax": 0,
+  "netTaxPayable": 0,
+  "detail": {
+   "taxesPaid": {
+    "advanceTax": 0,
+    "selfAssessmentTax": 0,
+    "tds": 295781,
+    "tcs": 0,
+    "total": 295781,
+    "balancePayable": 0
+   },
+   "interest": {
+    "us234A": 0,
+    "us234B": 0,
+    "us234C": 0,
+    "lateFee234F": 0,
+    "totalWithInterest": 42272
+   },
+   "turnoverBanking": 2954224,
+   "turnoverCash": 0,
+   "declaredBanking": 893653,
+   "declaredCash": 0
+  },
+  "reportIds": [
+   "cover",
+   "income",
+   "reconciliation",
+   "balancesheet",
+   "tax"
+  ],
+  "issues": []
+ },
+ {
+  "file": "test8_sukalp_44ad.json",
+  "form": "ITR4",
+  "name": "NIRTI VIJAY",
+  "pan": "BSFPA0194M",
+  "assessmentYear": "2024-25",
+  "regime": "new",
+  "income": {
+   "businessIncome": 1030285,
+   "capitalGains": 0,
+   "otherSources": 392799,
+   "total": 1423084,
+   "grossReceipts": 14526643
+  },
+  "deductions": [],
+  "totalDeductions": 0,
+  "taxableIncome": 1423084,
+  "taxBeforeCess": 134617,
+  "rebate": 0,
+  "cess": 5385,
+  "totalTax": 140002,
+  "tds": 33497,
+  "advanceTax": 70000,
+  "selfAssessmentTax": 27930,
+  "netTaxPayable": 8575,
+  "detail": {
+   "taxesPaid": {
+    "advanceTax": 70000,
+    "selfAssessmentTax": 27930,
+    "tds": 33497,
+    "tcs": 0,
+    "total": 131427,
+    "balancePayable": 0
+   },
+   "interest": {
+    "us234A": 0,
+    "us234B": 1566,
+    "us234C": 261,
+    "lateFee234F": 0,
+    "totalWithInterest": 131428
+   },
+   "turnoverBanking": 14526643,
+   "turnoverCash": 0,
+   "declaredBanking": 1030285,
+   "declaredCash": 0
+  },
+  "reportIds": [
+   "cover",
+   "income",
+   "reconciliation",
+   "balancesheet",
+   "tax"
+  ],
+  "issues": []
+ }
+]

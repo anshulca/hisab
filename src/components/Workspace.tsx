@@ -1,6 +1,7 @@
 import { useComputationStore } from '../store/computationStore';
 import { UploadCard } from './UploadCard';
 import { ReviewCentre } from './ReviewCentre';
+import { I1ReviewCentre } from './I1ReviewCentre';
 
 interface WorkspaceProps {
   onNavigate: (section: string) => void;
@@ -8,9 +9,10 @@ interface WorkspaceProps {
 
 export function Workspace({ onNavigate }: WorkspaceProps) {
   const isReady = useComputationStore((s) => s.normalizedData !== null);
+  const itrForm = useComputationStore((s) => s.itrForm);
 
   if (isReady) {
-    return <ReviewCentre onNavigate={onNavigate} />;
+    return itrForm === 'ITR1' ? <I1ReviewCentre onNavigate={onNavigate} /> : <ReviewCentre onNavigate={onNavigate} />;
   }
 
   return (
@@ -21,10 +23,10 @@ export function Workspace({ onNavigate }: WorkspaceProps) {
             <i className="fas fa-upload" style={{ fontSize: '0.4rem' }} /> GET STARTED
           </span>
           <h2 style={{ fontSize: 'clamp(1.6rem,3vw,2.6rem)', fontWeight: 600, marginTop: 10, color: 'var(--text)' }}>
-            Upload your <span style={{ color: 'var(--gold)' }}>ITR-4 JSON</span>
+            Upload your <span style={{ color: 'var(--gold)' }}>ITR JSON</span>
           </h2>
           <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>
-            JSON se Computation tak - in one click.
+            JSON se Computation tak - in one click. ITR-1 (SAHAJ) and ITR-4 (SUGAM) auto-detected.
           </p>
         </div>
         <div style={{ maxWidth: 700, margin: '34px auto 70px' }}>

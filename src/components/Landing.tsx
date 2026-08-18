@@ -72,7 +72,7 @@ export function Landing({ onGenerate }: LandingProps) {
                   <div className="mock-row"><span>Other Income</span><span className="amount">₹50,000</span></div>
                 </div>
               </div>
-              <div className="floating-bubble bubble1"><i className="fas fa-check-circle" /> ITR-4 detected</div>
+              <div className="floating-bubble bubble1"><i className="fas fa-check-circle" /> ITR-1 / ITR-4 detected</div>
               <div className="floating-bubble bubble2"><i className="fas fa-chart-line" /> P&L ready</div>
               <div className="floating-bubble bubble3"><i className="fas fa-balance-scale" /> Balanced</div>
               <div className="particles">
@@ -120,7 +120,7 @@ export function Landing({ onGenerate }: LandingProps) {
                 </div>
                 <div className="check-row">
                   <span><i className="fas fa-check-circle" /> JSON Valid</span>
-                  <span><i className="fas fa-check-circle" /> ITR-4</span>
+                  <span><i className="fas fa-check-circle" /> ITR-1 & ITR-4</span>
                   <span><i className="fas fa-check-circle" /> AY 2026-27</span>
                   <span className="warn"><i className="fas fa-exclamation-triangle" /> Balance Sheet diff ₹25k</span>
                 </div>

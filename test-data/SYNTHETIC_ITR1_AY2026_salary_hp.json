@@ -1,0 +1,54 @@
+{
+  "ITR": {
+    "ITR1": {
+      "CreationInfo": { "SWVersionNo": "26.3.0", "SWCreatedBy": "SW20000026", "JSONCreatedBy": "SW20000026", "JSONCreationDate": "2026-07-28", "IntermediaryCity": "JAIPUR", "Digest": "synthetic-test-fixture-salaryhpfy2526" },
+      "Form_ITR1": { "FormName": "ITR-1", "Description": "For Indls having Income from Salary, Pension…", "AssessmentYear": 2026, "SchemaVer": "Ver1.0", "FormVer": "Ver1.0" },
+      "PersonalInfo": {
+        "AssesseeName": { "FirstName": "SANJAY", "MiddleName": "", "SurNameOrOrgName": "KUMAR" },
+        "PAN": "AJKPS1234K",
+        "Address": { "ResidenceNo": "12", "RoadOrStreet": "MG ROAD", "LocalityOrArea": "KOTHI", "CityOrTownOrDistrict": "PUNE,PUNE", "StateCode": 27, "CountryCode": 91, "PinCode": 411001, "CountryCodeMobile": 91, "MobileNo": 9822001122, "EmailAddress": "sanjay.kumar@example.com" },
+        "DOB": "1985-06-15",
+        "EmployerCategory": "OTH",
+        "AadhaarCardNo": 123456789012,
+        "SecondaryAdd": "N",
+        "AlternateAddress": {}
+      },
+      "FilingStatus": { "ReturnFileSec": 11, "SeventhProvisio139": "N", "OptOutNewTaxRegime": "N", "ItrFilingDueDate": "2026-07-31", "AsseseeRepFlg": "N" },
+      "ITR1_IncomeDeductions": {
+        "GrossSalary": 720000, "Salary": 720000, "PerquisitesValue": 0, "ProfitsInSalary": 0,
+        "AllwncExemptUs10": { "TotalAllwncExemptUs10": 0 },
+        "NetSalary": 720000, "DeductionUs16": 75000, "DeductionUs16ia": 75000, "EntertainmentAlw16ii": 0, "ProfessionalTaxUs16iii": 0,
+        "IncomeFromSal": 645000,
+        "IncomeOthSrc": 0,
+        "OthersInc": { "OthersIncDtlsOthSrc": [] },
+        "DeductionUs57iia": 0,
+        "UsrDeductUndChapVIA": { "Section80C": 0, "Section80CCC": 0, "Section80CCDEmployeeOrSE": 0, "Section80CCD1B": 0, "Section80CCDEmployer": 0, "Section80D": 0, "Section80DD": 0, "Section80DDB": 0, "Section80E": 0, "Section80EE": 0, "Section80EEA": 0, "Section80EEB": 0, "Section80G": 0, "Section80GG": 0, "Section80GGA": 0, "Section80GGC": 0, "Section80U": 0, "Section80TTA": 0, "Section80TTB": 0, "TotalChapVIADeductions": 0, "AnyOthSec80CCH": 0 },
+        "DeductUndChapVIA": { "Section80C": 0, "Section80CCC": 0, "Section80CCDEmployeeOrSE": 0, "Section80CCD1B": 0, "Section80CCDEmployer": 0, "Section80D": 0, "Section80DD": 0, "Section80DDB": 0, "Section80E": 0, "Section80EE": 0, "Section80EEA": 0, "Section80EEB": 0, "Section80G": 0, "Section80GG": 0, "Section80GGA": 0, "Section80GGC": 0, "Section80U": 0, "Section80TTA": 0, "Section80TTB": 0, "TotalChapVIADeductions": 0, "AnyOthSec80CCH": 0 },
+        "TotalIncome": 746800,
+        "ExemptIncAgriOthUs10": { "ExemptIncAgriOthUs10Total": 0 },
+        "PropertyDetails": [
+          { "PropertyDetailsApplicable": "N", "PropertyType": "S", "AddressOfProperty": "12 MG ROAD, KOTHI, PUNE", "GrossRentReceived": 180000, "TaxPaidlocalAuth": 6000, "AnnualValue": 174000, "StandardDeduction": 52200, "InterestPayable": 20000, "ArrearsUnrealizedRentRcvd": 0, "TotalIncomeOfHP": 101800 }
+        ],
+        "TotalIncomeChargeableUnHP": 101800,
+        "GrossTotIncome": 746800,
+        "GrossTotIncomeIncLTCG112A": 746800
+      },
+      "ITR1_TaxComputation": {
+        "TotalTaxPayable": 29680, "Rebate87A": 0, "TaxPayableOnRebate": 29680, "EducationCess": 1187, "GrossTaxLiability": 30867, "Section89": 0, "NetTaxLiability": 30867, "TotalIntrstPay": 0,
+        "IntrstPay": { "IntrstPayUs234A": 0, "IntrstPayUs234B": 0, "IntrstPayUs234C": 0, "LateFilingFee234F": 0, "FeeFurnish234I": 0 },
+        "TotTaxPlusIntrstPay": 30867
+      },
+      "TaxPaid": {
+        "TaxesPaid": { "AdvanceTax": 10000, "TDS": 15000, "TCS": 0, "SelfAssessmentTax": 0, "TotalTaxesPaid": 25000 },
+        "BalTaxPayable": 5867
+      },
+      "Refund": { "RefundDue": 0, "BankAccountDtls": { "AddtnlBankDetails": [ { "IFSCCode": "HDFC0001234", "BankName": "HDFC BANK", "BankAccountNo": 50100567890123, "UseForRefund": "true", "AccountType": "SB" } ] } },
+      "Schedule80D": { "Sec80DSelfFamSrCtznHealth": { "SeniorCitizenFlag": "S", "SelfAndFamily": 0, "HealthInsPremSlfFam": 0, "PrevHlthChckUpSlfFam": 0, "SelfAndFamilySeniorCitizen": 0, "HlthInsPremSlfFamSrCtzn": 0, "PrevHlthChckUpSlfFamSrCtzn": 0, "MedicalExpSlfFamSrCtzn": 0, "ParentsSeniorCitizenFlag": "P", "Parents": 0, "HlthInsPremParents": 0, "PrevHlthChckUpParents": 0, "ParentsSeniorCitizen": 0, "HlthInsPremParentsSrCtzn": 0, "PrevHlthChckUpParentsSrCtzn": 0, "MedicalExpParentsSrCtzn": 0, "EligibleAmountOfDedn": 0 } },
+      "TDSonOthThanSals": { "TotalTDSonOthThanSals": 0 },
+      "ScheduleTDS3Dtls": { "TotalTDS3Details": 0 },
+      "ScheduleTCS": { "TotalSchTCS": 0 },
+      "Verification": { "Declaration": { "AssesseeVerName": "SANJAY KUMAR", "FatherName": "MOHAN KUMAR", "AssesseeVerPAN": "AJKPS1234K" }, "Capacity": "S", "Place": "PUNE" },
+      "LTCG112A": { "TotSaleCnsdrn": 0, "TotCstAcqisn": 0, "LongCap112A": 0 }
+    }
+  }
+}

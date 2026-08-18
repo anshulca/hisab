@@ -6,14 +6,14 @@ import { formatINR } from '../utils/currency';
 import { ReportGenerator, type ReportData } from '../reports/reportGenerator';
 import { ensureRupeeFont } from './fonts';
 
-const INK: [number, number, number] = [26, 27, 34];
-const MUTED: [number, number, number] = [122, 118, 126];
-const GOLD: [number, number, number] = [184, 139, 58];
-const GOLD_DARK: [number, number, number] = [212, 168, 84];
-const PAPER: [number, number, number] = [247, 246, 243];
-const DARK: [number, number, number] = [28, 26, 24];
-const GREEN: [number, number, number] = [21, 128, 61];
-const RED: [number, number, number] = [185, 28, 28];
+export const INK: [number, number, number] = [26, 27, 34];
+export const MUTED: [number, number, number] = [122, 118, 126];
+export const GOLD: [number, number, number] = [184, 139, 58];
+export const GOLD_DARK: [number, number, number] = [212, 168, 84];
+export const PAPER: [number, number, number] = [247, 246, 243];
+export const DARK: [number, number, number] = [28, 26, 24];
+export const GREEN: [number, number, number] = [21, 128, 61];
+export const RED: [number, number, number] = [185, 28, 28];
 
 export interface PdfOptions {
   fileName?: string;
@@ -21,10 +21,19 @@ export interface PdfOptions {
   prev?: NormalizedITR | null;
 }
 
-const MARGIN = 48;
-const PAGE_W = 595.28;
-const PAGE_H = 841.89;
-const CONTENT_W = PAGE_W - MARGIN * 2;
+export const MARGIN = 48;
+export const PAGE_W = 595.28;
+export const PAGE_H = 841.89;
+export const CONTENT_W = PAGE_W - MARGIN * 2;
+
+export function sanitizeFilename(name: string): string {
+  const cleaned = name
+    .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/[. ]+$/g, '')
+    .trim();
+  return cleaned || 'Taxpayer';
+}
 
 export async function buildPdf(normalized: NormalizedITR, _options: PdfOptions = {}, initDoc?: jsPDF): Promise<jsPDF> {
   const report = new ReportGenerator().generate(normalized);
@@ -64,29 +73,29 @@ export async function buildPdf(normalized: NormalizedITR, _options: PdfOptions =
 export async function generatePdf(normalized: NormalizedITR, options: PdfOptions = {}): Promise<void> {
   const doc = await buildPdf(normalized, options);
   const fileName =
-    options.fileName ?? `HISAB_${normalized.taxpayer.pan}_${normalized.taxpayer.assessmentYear.replace('-', '_')}.pdf`;
+    options.fileName ?? `${sanitizeFilename(normalized.taxpayer.name)} - Hisab by CA Anshul Karwa.pdf`;
   doc.save(fileName);
 }
 
 /* ================= helpers ================= */
 
-function fmt(v: number): string {
+export function fmt(v: number): string {
   return formatINR(v, { noDecimals: true });
 }
 
-function dash(v: string | number | undefined | null): string {
+export function dash(v: string | number | undefined | null): string {
   if (v === undefined || v === null || v === '') return '—';
   return String(v);
 }
 
-const tableBase = {
+export const tableBase = {
   margin: { left: MARGIN, right: MARGIN },
   styles: { font: 'Roboto', fontSize: 9.5, textColor: INK as unknown as string, cellPadding: 7 },
   headStyles: { fillColor: DARK as unknown as string, textColor: [255, 255, 255] as unknown as string, fontStyle: 'bold' },
   alternateRowStyles: { fillColor: PAPER as unknown as string }
 } as const;
 
-function ensureSpace(doc: jsPDF, y: number, needed: number): number {
+export function ensureSpace(doc: jsPDF, y: number, needed: number): number {
   if (y + needed > PAGE_H - 70) {
     doc.addPage();
     y = 56;
@@ -97,7 +106,7 @@ function ensureSpace(doc: jsPDF, y: number, needed: number): number {
   return y;
 }
 
-function flowHead(doc: jsPDF, y: number, label: string, title: string, sub?: string, reserve = 420): number {
+export function flowHead(doc: jsPDF, y: number, label: string, title: string, sub?: string, reserve = 420): number {
   y = ensureSpace(doc, y, reserve);
 
   doc.setFont('Roboto', 'bold');
@@ -123,7 +132,7 @@ function flowHead(doc: jsPDF, y: number, label: string, title: string, sub?: str
   return y + 46;
 }
 
-function miniHead(doc: jsPDF, y: number, text: string): number {
+export function miniHead(doc: jsPDF, y: number, text: string): number {
   y = ensureSpace(doc, y, 220);
   doc.setFont('Roboto', 'bold');
   doc.setFontSize(8.5);
@@ -132,7 +141,7 @@ function miniHead(doc: jsPDF, y: number, text: string): number {
   return y + 12;
 }
 
-function kvTable(doc: jsPDF, startY: number, rows: Array<[string, string | number]>, opts: { twoCol?: boolean } = {}): number {
+export function kvTable(doc: jsPDF, startY: number, rows: Array<[string, string | number]>, opts: { twoCol?: boolean } = {}): number {
   let body: Array<string[]> = rows.map(([k, v]) => [k, String(v)]);
   if (opts.twoCol) {
     const paired: string[][] = [];
@@ -155,7 +164,7 @@ function kvTable(doc: jsPDF, startY: number, rows: Array<[string, string | numbe
   return ((doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? startY) + 14;
 }
 
-function moneyTable(
+export function moneyTable(
   doc: jsPDF,
   startY: number,
   head: string[],
@@ -194,7 +203,7 @@ function moneyTable(
   return ((doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? startY) + 14;
 }
 
-function statusLine(doc: jsPDF, y: number, ok: boolean, msg: string): number {
+export function statusLine(doc: jsPDF, y: number, ok: boolean, msg: string): number {
   y = ensureSpace(doc, y, 30);
   doc.setFont('Roboto', 'bold');
   doc.setFontSize(9);
@@ -203,7 +212,7 @@ function statusLine(doc: jsPDF, y: number, ok: boolean, msg: string): number {
   return y + 14;
 }
 
-function footerNote(doc: jsPDF, y: number, text: string): number {
+export function footerNote(doc: jsPDF, y: number, text: string): number {
   y = ensureSpace(doc, y, 34);
   doc.setFont('Roboto', 'normal');
   doc.setFontSize(8);
@@ -213,7 +222,7 @@ function footerNote(doc: jsPDF, y: number, text: string): number {
   return y + lines.length * 11 + 6;
 }
 
-function bsCloseYear(fy: string): string {
+export function bsCloseYear(fy: string): string {
   const tail = fy.slice(5, 7);
   return tail ? `20${tail}` : fy.slice(0, 4);
 }
@@ -572,7 +581,7 @@ function renderDeclaration(doc: jsPDF, r: ReportData, y: number): number {
 
 /* ================= Footer ================= */
 
-function renderFooter(doc: jsPDF) {
+export function renderFooter(doc: jsPDF) {
   type GStateCtor = new (opts: { opacity: number }) => unknown;
   const gs = doc as unknown as { GState: GStateCtor };
   const pages = doc.getNumberOfPages();

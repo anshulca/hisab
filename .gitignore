@@ -6,6 +6,9 @@ node_modules
 # Testing
 /coverage
 
+# Regression harness build output
+/scripts/.tmp-regress
+
 # Production
 /dist
 /build

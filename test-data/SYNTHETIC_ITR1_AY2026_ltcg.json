@@ -1,0 +1,52 @@
+{
+  "ITR": {
+    "ITR1": {
+      "CreationInfo": { "SWVersionNo": "26.3.0", "SWCreatedBy": "SW20000026", "JSONCreatedBy": "SW20000026", "JSONCreationDate": "2026-07-30", "IntermediaryCity": "JAIPUR", "Digest": "synthetic-test-fixture-ltcgfy2526" },
+      "Form_ITR1": { "FormName": "ITR-1", "Description": "For Indls having Income from Salary, Pension…", "AssessmentYear": 2026, "SchemaVer": "Ver1.0", "FormVer": "Ver1.0" },
+      "PersonalInfo": {
+        "AssesseeName": { "FirstName": "ROHAN", "MiddleName": "", "SurNameOrOrgName": "MEHTA" },
+        "PAN": "AKJPM5678R",
+        "Address": { "ResidenceNo": "22", "RoadOrStreet": "BAKER STREET", "LocalityOrArea": "KORAMANGALA", "CityOrTownOrDistrict": "BENGALURU,BENGALURU", "StateCode": 29, "CountryCode": 91, "PinCode": 560034, "CountryCodeMobile": 91, "MobileNo": 9901234567, "EmailAddress": "rohan.mehta@example.com" },
+        "DOB": "1992-11-03",
+        "EmployerCategory": "OTH",
+        "AadhaarCardNo": 555555555555,
+        "SecondaryAdd": "N",
+        "AlternateAddress": {}
+      },
+      "FilingStatus": { "ReturnFileSec": 11, "SeventhProvisio139": "N", "OptOutNewTaxRegime": "N", "ItrFilingDueDate": "2026-07-31", "AsseseeRepFlg": "N" },
+      "ITR1_IncomeDeductions": {
+        "GrossSalary": 720000, "Salary": 720000, "PerquisitesValue": 0, "ProfitsInSalary": 0,
+        "AllwncExemptUs10": { "TotalAllwncExemptUs10": 0 },
+        "NetSalary": 720000, "DeductionUs16": 75000, "DeductionUs16ia": 75000, "EntertainmentAlw16ii": 0, "ProfessionalTaxUs16iii": 0,
+        "IncomeFromSal": 645000,
+        "IncomeOthSrc": 0,
+        "OthersInc": { "OthersIncDtlsOthSrc": [] },
+        "DeductionUs57iia": 0,
+        "UsrDeductUndChapVIA": { "Section80C": 0, "Section80CCC": 0, "Section80CCDEmployeeOrSE": 0, "Section80CCD1B": 0, "Section80CCDEmployer": 0, "Section80D": 0, "Section80DD": 0, "Section80DDB": 0, "Section80E": 0, "Section80EE": 0, "Section80EEA": 0, "Section80EEB": 0, "Section80G": 0, "Section80GG": 0, "Section80GGA": 0, "Section80GGC": 0, "Section80U": 0, "Section80TTA": 0, "Section80TTB": 0, "TotalChapVIADeductions": 0, "AnyOthSec80CCH": 0 },
+        "DeductUndChapVIA": { "Section80C": 0, "Section80CCC": 0, "Section80CCDEmployeeOrSE": 0, "Section80CCD1B": 0, "Section80CCDEmployer": 0, "Section80D": 0, "Section80DD": 0, "Section80DDB": 0, "Section80E": 0, "Section80EE": 0, "Section80EEA": 0, "Section80EEB": 0, "Section80G": 0, "Section80GG": 0, "Section80GGA": 0, "Section80GGC": 0, "Section80U": 0, "Section80TTA": 0, "Section80TTB": 0, "TotalChapVIADeductions": 0, "AnyOthSec80CCH": 0 },
+        "TotalIncome": 1445000,
+        "ExemptIncAgriOthUs10": { "ExemptIncAgriOthUs10Total": 0 },
+        "PropertyDetails": [],
+        "TotalIncomeChargeableUnHP": 0,
+        "GrossTotIncome": 1445000,
+        "GrossTotIncomeIncLTCG112A": 1445000
+      },
+      "ITR1_TaxComputation": {
+        "TotalTaxPayable": 103875, "Rebate87A": 0, "TaxPayableOnRebate": 103875, "EducationCess": 4155, "GrossTaxLiability": 108030, "Section89": 0, "NetTaxLiability": 108030, "TotalIntrstPay": 0,
+        "IntrstPay": { "IntrstPayUs234A": 0, "IntrstPayUs234B": 0, "IntrstPayUs234C": 0, "LateFilingFee234F": 0, "FeeFurnish234I": 0 },
+        "TotTaxPlusIntrstPay": 108030
+      },
+      "TaxPaid": {
+        "TaxesPaid": { "AdvanceTax": 0, "TDS": 100000, "TCS": 0, "SelfAssessmentTax": 0, "TotalTaxesPaid": 100000 },
+        "BalTaxPayable": 8030
+      },
+      "Refund": { "RefundDue": 0, "BankAccountDtls": { "AddtnlBankDetails": [ { "IFSCCode": "ICIC0000998", "BankName": "ICICI BANK", "BankAccountNo": 880123456789, "UseForRefund": "true", "AccountType": "SB" } ] } },
+      "Schedule80D": { "Sec80DSelfFamSrCtznHealth": { "SeniorCitizenFlag": "S", "SelfAndFamily": 0, "HealthInsPremSlfFam": 0, "PrevHlthChckUpSlfFam": 0, "SelfAndFamilySeniorCitizen": 0, "HlthInsPremSlfFamSrCtzn": 0, "PrevHlthChckUpSlfFamSrCtzn": 0, "MedicalExpSlfFamSrCtzn": 0, "ParentsSeniorCitizenFlag": "P", "Parents": 0, "HlthInsPremParents": 0, "PrevHlthChckUpParents": 0, "ParentsSeniorCitizen": 0, "HlthInsPremParentsSrCtzn": 0, "PrevHlthChckUpParentsSrCtzn": 0, "MedicalExpParentsSrCtzn": 0, "EligibleAmountOfDedn": 0 } },
+      "TDSonOthThanSals": { "TotalTDSonOthThanSals": 0 },
+      "ScheduleTDS3Dtls": { "TotalTDS3Details": 0 },
+      "ScheduleTCS": { "TotalSchTCS": 0 },
+      "Verification": { "Declaration": { "AssesseeVerName": "ROHAN MEHTA", "FatherName": "SURESH MEHTA", "AssesseeVerPAN": "AKJPM5678R" }, "Capacity": "S", "Place": "BENGALURU" },
+      "LTCG112A": { "TotSaleCnsdrn": 1200000, "TotCstAcqisn": 400000, "LongCap112A": 800000 }
+    }
+  }
+}

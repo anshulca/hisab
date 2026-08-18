@@ -71,7 +71,7 @@ export function UploadCard({ onGenerated }: UploadCardProps) {
             Drag & drop or <strong style={{ color: 'var(--gold)' }}>browse</strong> - max 5MB
           </p>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: 8 }}>
-            Supported: ITR-4 export (.json) · test files included in <code>test-data/</code>
+            Supported: ITR-1 (SAHAJ) & ITR-4 (SUGAM) exports (.json) · test files in <code>test-data/</code>
           </p>
         </div>
 

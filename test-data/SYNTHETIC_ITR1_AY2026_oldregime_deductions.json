@@ -1,0 +1,52 @@
+{
+  "ITR": {
+    "ITR1": {
+      "CreationInfo": { "SWVersionNo": "26.3.0", "SWCreatedBy": "SW20000026", "JSONCreatedBy": "SW20000026", "JSONCreationDate": "2026-07-25", "IntermediaryCity": "JAIPUR", "Digest": "synthetic-test-fixture-oldregimefy2526" },
+      "Form_ITR1": { "FormName": "ITR-1", "Description": "For Indls having Income from Salary, Pension…", "AssessmentYear": 2026, "SchemaVer": "Ver1.0", "FormVer": "Ver1.0" },
+      "PersonalInfo": {
+        "AssesseeName": { "FirstName": "MEERA", "MiddleName": "", "SurNameOrOrgName": "SHARMA" },
+        "PAN": "AKPPM9876M",
+        "Address": { "ResidenceNo": "5", "RoadOrStreet": "SECTOR 15", "LocalityOrArea": "NOIDA", "CityOrTownOrDistrict": "NOIDA,GAUTAM BUDDHA NAGAR", "StateCode": 9, "CountryCode": 91, "PinCode": 201301, "CountryCodeMobile": 91, "MobileNo": 9810054356, "EmailAddress": "meera.sharma@example.com" },
+        "DOB": "1979-01-10",
+        "EmployerCategory": "OTH",
+        "AadhaarCardNo": 876543210987,
+        "SecondaryAdd": "N",
+        "AlternateAddress": {}
+      },
+      "FilingStatus": { "ReturnFileSec": 11, "SeventhProvisio139": "N", "OptOutNewTaxRegime": "Y", "ItrFilingDueDate": "2026-07-31", "AsseseeRepFlg": "N" },
+      "ITR1_IncomeDeductions": {
+        "GrossSalary": 1500000, "Salary": 1500000, "PerquisitesValue": 0, "ProfitsInSalary": 0,
+        "AllwncExemptUs10": { "TotalAllwncExemptUs10": 0 },
+        "NetSalary": 1500000, "DeductionUs16": 50000, "DeductionUs16ia": 50000, "EntertainmentAlw16ii": 0, "ProfessionalTaxUs16iii": 0,
+        "IncomeFromSal": 1450000,
+        "IncomeOthSrc": 60000,
+        "OthersInc": { "OthersIncDtlsOthSrc": [ { "OthSrcNatureDesc": "OTH", "OthSrcOthNatOfInc": "Interest on Fixed Deposits", "OthSrcOthAmount": 60000 } ] },
+        "DeductionUs57iia": 0,
+        "UsrDeductUndChapVIA": { "Section80C": 150000, "Section80CCC": 0, "Section80CCDEmployeeOrSE": 0, "Section80CCD1B": 0, "Section80CCDEmployer": 0, "Section80D": 25000, "Section80DD": 0, "Section80DDB": 0, "Section80E": 0, "Section80EE": 0, "Section80EEA": 0, "Section80EEB": 0, "Section80G": 0, "Section80GG": 0, "Section80GGA": 0, "Section80GGC": 0, "Section80U": 0, "Section80TTA": 0, "Section80TTB": 0, "TotalChapVIADeductions": 175000, "AnyOthSec80CCH": 0 },
+        "DeductUndChapVIA": { "Section80C": 150000, "Section80CCC": 0, "Section80CCDEmployeeOrSE": 0, "Section80CCD1B": 0, "Section80CCDEmployer": 0, "Section80D": 25000, "Section80DD": 0, "Section80DDB": 0, "Section80E": 0, "Section80EE": 0, "Section80EEA": 0, "Section80EEB": 0, "Section80G": 0, "Section80GG": 0, "Section80GGA": 0, "Section80GGC": 0, "Section80U": 0, "Section80TTA": 0, "Section80TTB": 0, "TotalChapVIADeductions": 175000, "AnyOthSec80CCH": 0 },
+        "TotalIncome": 1335000,
+        "ExemptIncAgriOthUs10": { "ExemptIncAgriOthUs10Total": 0 },
+        "PropertyDetails": [],
+        "TotalIncomeChargeableUnHP": 0,
+        "GrossTotIncome": 1510000,
+        "GrossTotIncomeIncLTCG112A": 1510000
+      },
+      "ITR1_TaxComputation": {
+        "TotalTaxPayable": 213000, "Rebate87A": 0, "TaxPayableOnRebate": 213000, "EducationCess": 8520, "GrossTaxLiability": 221520, "Section89": 0, "NetTaxLiability": 221520, "TotalIntrstPay": 0,
+        "IntrstPay": { "IntrstPayUs234A": 0, "IntrstPayUs234B": 0, "IntrstPayUs234C": 0, "LateFilingFee234F": 0, "FeeFurnish234I": 0 },
+        "TotTaxPlusIntrstPay": 221520
+      },
+      "TaxPaid": {
+        "TaxesPaid": { "AdvanceTax": 0, "TDS": 30000, "TCS": 0, "SelfAssessmentTax": 0, "TotalTaxesPaid": 30000 },
+        "BalTaxPayable": 191520
+      },
+      "Refund": { "RefundDue": 0, "BankAccountDtls": { "AddtnlBankDetails": [ { "IFSCCode": "SBIN0001506", "BankName": "STATE BANK OF INDIA", "BankAccountNo": 309876543210, "UseForRefund": "true", "AccountType": "SB" } ] } },
+      "Schedule80D": { "Sec80DSelfFamSrCtznHealth": { "SeniorCitizenFlag": "S", "SelfAndFamily": 25000, "HealthInsPremSlfFam": 25000, "PrevHlthChckUpSlfFam": 0, "SelfAndFamilySeniorCitizen": 0, "HlthInsPremSlfFamSrCtzn": 0, "PrevHlthChckUpSlfFamSrCtzn": 0, "MedicalExpSlfFamSrCtzn": 0, "ParentsSeniorCitizenFlag": "P", "Parents": 0, "HlthInsPremParents": 0, "PrevHlthChckUpParents": 0, "ParentsSeniorCitizen": 0, "HlthInsPremParentsSrCtzn": 0, "PrevHlthChckUpParentsSrCtzn": 0, "MedicalExpParentsSrCtzn": 0, "EligibleAmountOfDedn": 25000 } },
+      "TDSonOthThanSals": { "TotalTDSonOthThanSals": 15000 },
+      "ScheduleTDS3Dtls": { "TotalTDS3Details": 0 },
+      "ScheduleTCS": { "TotalSchTCS": 0 },
+      "Verification": { "Declaration": { "AssesseeVerName": "MEERA SHARMA", "FatherName": "RAJENDRA SHARMA", "AssesseeVerPAN": "AKPPM9876M" }, "Capacity": "S", "Place": "NOIDA" },
+      "LTCG112A": { "TotSaleCnsdrn": 0, "TotCstAcqisn": 0, "LongCap112A": 0 }
+    }
+  }
+}
