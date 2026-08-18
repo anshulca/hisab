@@ -1,5 +1,5 @@
 import type { NormalizedITR } from '../types';
-import { formatCurrency } from '../utils/currency';
+import { cleanNumber, displayAmount } from '../utils/currency';
 
 export interface HisabCheckItem {
   label: string;
@@ -61,7 +61,8 @@ export interface ReportData {
       houseProperty: number;
       business: number;
       otherSources: number;
-      otherSourcesBreakdown?: Array<{ label: string; amount: number }>;
+      savingsInterest: number;
+      otherIncome: number;
       grossTotal: number;
       deductions: number;
       totalIncome: number;
@@ -131,12 +132,17 @@ export interface ReportData {
     assessmentYear: string;
     itrType: string;
     financialYear: string;
-    filingDate: string;
   };
 }
 
 function regimeLabel(regime: string): string {
   return regime === 'new' ? 'New Regime (115BAC)' : 'Old Regime';
+}
+
+function bsVal(data: NormalizedITR, label: string): number {
+  const section = data.reportSections.find((s) => s.id === 'balancesheet');
+  const item = section?.details.find((x) => x.label === label);
+  return typeof item?.value === 'number' ? item.value : 0;
 }
 
 export class ReportGenerator {
@@ -146,69 +152,74 @@ export class ReportGenerator {
     const inc = data.incomeBreakdown;
     const tax = data.taxComputation;
 
-    const ayYear = parseInt(t.assessmentYear, 10) || 0;
-    const fy =
-      ayYear > 0 ? `${ayYear - 1}-${String(ayYear).slice(-2)}` : t.financialYear || '';
+    const ayYear = parseInt(t.assessmentYear, 10) || 2024;
+    const fy = `${ayYear - 1}-${String(ayYear).slice(-2)}`;
 
-    const bs = (label: string): number => {
-      const section = data.reportSections.find((s) => s.id === 'balancesheet');
-      const item = section?.details.find((x) => x.label === label);
-      return typeof item?.value === 'number' ? item.value : 0;
+    // Business / financials
+    const financials = {
+      totalAssets: bsVal(data, 'Total Assets'),
+      totalLiabilities:
+        bsVal(data, 'Partner Capital') + bsVal(data, 'Secured Loans') + bsVal(data, 'Unsecured Loans') +
+        bsVal(data, 'Sundry Creditors') + bsVal(data, 'Other Current Liab') + bsVal(data, 'Advances'),
+      capital: bsVal(data, 'Partner Capital'),
+      securedLoans: bsVal(data, 'Secured Loans'),
+      unsecuredLoans: bsVal(data, 'Unsecured Loans'),
+      creditors: bsVal(data, 'Sundry Creditors'),
+      otherLiabilities: bsVal(data, 'Other Current Liab') + bsVal(data, 'Advances'),
+      fixedAssets: bsVal(data, 'Fixed Assets'),
+      inventories: bsVal(data, 'Inventories'),
+      debtors: bsVal(data, 'Sundry Debtors'),
+      bankBalance: bsVal(data, 'Bank Balances'),
+      cashInHand: bsVal(data, 'Cash in Hand'),
+      loansAndAdvances: bsVal(data, 'Loans & Advances'),
+      otherAssets: bsVal(data, 'Other Assets')
     };
 
-    const banking = detail?.turnoverBanking ?? inc.grossReceipts;
-    const cashTurnover = detail?.turnoverCash ?? 0;
-    const declaredBanking = detail?.declaredBanking ?? 0;
-    const declaredCash = detail?.declaredCash ?? 0;
-    const minBanking6 = detail?.minBanking6 ?? Math.round(banking * 0.06);
-    const minCash8 = detail?.minCash8 ?? Math.round(cashTurnover * 0.08);
-    const declaredTotal = declaredBanking + declaredCash;
-    const minTotal = minBanking6 + minCash8;
-    const npPercentage = banking + cashTurnover > 0 ? (declaredTotal / (banking + cashTurnover)) * 100 : 0;
+    // Clean all numbers
+    const sales = cleanNumber(detail?.turnoverBanking ?? inc.grossReceipts) + cleanNumber(detail?.turnoverCash);
+    const bankingReceipts = cleanNumber(detail?.turnoverBanking ?? inc.grossReceipts);
+    const cashReceipts = cleanNumber(detail?.turnoverCash);
+    const declaredBankingAmt = cleanNumber(detail?.declaredBanking ?? inc.businessIncome);
+    const declaredCashAmt = cleanNumber(detail?.declaredCash);
+    const declaredIncome = cleanNumber(declaredBankingAmt + declaredCashAmt) || cleanNumber(inc.businessIncome);
+    const sixPercent = cleanNumber(detail?.minBanking6 ?? Math.round(bankingReceipts * 0.06));
+    const eightPercent = cleanNumber(detail?.minCash8 ?? Math.round(cashReceipts * 0.08));
 
-    const paid = detail?.taxesPaid;
-    const advanceTax = paid?.advanceTax ?? tax.advanceTax;
-    const tds = paid?.tds ?? tax.tds;
-    const tcs = paid?.tcs ?? 0;
-    const selfAssessmentTax = paid?.selfAssessmentTax ?? tax.selfAssessmentTax;
-    const totalPaid = paid?.total ?? advanceTax + tds + tcs + selfAssessmentTax;
+    // Other income
+    const otherSources = cleanNumber(inc.otherSources);
+    const breakdown = detail?.otherSourcesBreakdown ?? [];
+    const savingsInterest = cleanNumber(breakdown.find((b) => /(savings|interest|FD|deposit)/i.test(b.label))?.amount ?? 0);
+    const otherIncome = otherSources > 0 ? otherSources - savingsInterest : 0;
 
-    const netPayable = tax.netTaxPayable;
-    const refund = (t.refundDue ?? 0) > 0 ? (t.refundDue ?? 0) : 0;
-
-    const capital = bs('Partner Capital');
-    const securedLoans = bs('Secured Loans');
-    const unsecuredLoans = bs('Unsecured Loans');
-    const creditors = bs('Sundry Creditors');
-    const otherLiabilities = bs('Other Current Liab') + bs('Advances');
-    const totalLiabilities = capital + securedLoans + unsecuredLoans + creditors + otherLiabilities;
-
-    const fixedAssets = bs('Fixed Assets');
-    const inventories = bs('Inventories');
-    const debtors = bs('Sundry Debtors');
-    const bankBalance = bs('Bank Balances');
-    const cashInHand = bs('Cash in Hand');
-    const otherAssets = bs('Loans & Advances') + bs('Other Assets');
-    const totalAssets =
-      bs('Total Assets') || fixedAssets + inventories + debtors + bankBalance + cashInHand + otherAssets;
-
-    const sales = banking + cashTurnover;
-    const purchases =
-      data.expenseSummary.items.find((e) => e.category === 'Purchases')?.amount ?? 0;
-    const openingStock = 0;
-    const grossProfit = sales + inventories - openingStock - purchases;
-    const operatingExpenses = data.expenseSummary.total - purchases;
-    const depreciation = data.depreciation.assets.reduce((s, a) => s + a.depreciation, 0);
-
-    const closingCapital = capital;
-    const openingCapital = 0;
-    const drawings = Math.max(0, openingCapital + inc.businessIncome - closingCapital);
-
+    // Tax figures
+    const taxLiability = cleanNumber(tax.totalTax);
+    const taxOnIncome = cleanNumber(tax.taxBeforeCess);
+    const cess = cleanNumber(tax.healthCess);
+    const rebate = cleanNumber(tax.rebate);
     const interest =
-      (detail?.interest?.us234A ?? 0) +
-      (detail?.interest?.us234B ?? 0) +
-      (detail?.interest?.us234C ?? 0) +
-      (detail?.interest?.lateFee234F ?? 0);
+      cleanNumber(detail?.interest?.us234A ?? 0) +
+      cleanNumber(detail?.interest?.us234B ?? 0) +
+      cleanNumber(detail?.interest?.us234C ?? 0) +
+      cleanNumber(detail?.interest?.lateFee234F ?? 0);
+    const totalTaxPaid = cleanNumber(detail?.taxesPaid?.total ?? tax.tds + tax.advanceTax + tax.selfAssessmentTax);
+    const tds = cleanNumber(detail?.taxesPaid?.tds ?? tax.tds);
+    const advanceTax = cleanNumber(detail?.taxesPaid?.advanceTax ?? tax.advanceTax);
+    const selfAssessment = cleanNumber(detail?.taxesPaid?.selfAssessmentTax ?? tax.selfAssessmentTax);
+
+    // Refund / Payable
+    const refund = cleanNumber(t.refundDue);
+    const netPayable = cleanNumber(tax.netTaxPayable);
+
+    // Balance Sheet
+    const totalLiabilities = cleanNumber(financials.totalLiabilities);
+    const totalAssets = cleanNumber(financials.totalAssets);
+    const closingStock = cleanNumber(financials.inventories);
+    const cashInHand = cleanNumber(financials.cashInHand);
+    const creditors = cleanNumber(financials.creditors);
+    const capital = cleanNumber(financials.capital);
+
+    // Calculate NP percentage
+    const npPercentage = sales > 0 ? (declaredIncome / sales) * 100 : 0;
 
     const rec = data.reportSections.find((s) => s.id === 'reconciliation');
     const recVal = (label: string): string | number | null =>
@@ -219,125 +230,149 @@ export class ReportGenerator {
     const regime = regimeLabel(t.regime);
     const filingSection = t.filingSection || '139(1) – On Time';
     const itrType = 'ITR-4 (SUGAM)';
-    const ackNumber = detail?.ackNumber || '—';
-    const filingDate = detail?.filingDate || '—';
-    const address = `${t.address || ''}${t.pinCode ? ` — ${t.pinCode}` : ''}`.trim();
 
     const hisabCheck: HisabCheckItem[] = [
       {
         label: '44AD declared income matches total income path',
-        value: inc.businessIncome,
-        pass: declaredTotal === inc.businessIncome
+        value: declaredIncome,
+        pass: declaredIncome === cleanNumber(inc.businessIncome)
       },
-      { label: 'Total income includes other sources', value: inc.otherSources, pass: inc.otherSources >= 0 },
+      { label: 'Total income includes other sources', value: otherSources, pass: otherSources >= 0 },
       { label: 'TDS claimed as per 26AS', value: tds, pass: tds > 0 },
       {
         label: 'Tax + cess as per ITR record',
-        value: `${officialLiability} official vs ${tax.totalTax} manual`,
-        pass: Math.abs(officialLiability - tax.totalTax) <= Math.max(1, officialLiability * 0.02)
+        value: `${officialLiability} official vs ${taxLiability} manual`,
+        pass: Math.abs(officialLiability - taxLiability) <= Math.max(1, officialLiability * 0.02)
       },
       { label: 'Refund due as per return', value: refund, pass: refund > 0 },
-      { label: 'Taxes paid vs net liability', value: totalPaid, pass: totalPaid >= netPayable }
+      { label: 'Taxes paid vs net liability', value: totalTaxPaid, pass: totalTaxPaid >= netPayable }
     ];
 
     return {
       header: {
-        name: t.name,
-        pan: t.pan,
-        assessmentYear: t.assessmentYear,
-        financialYear: fy || t.financialYear,
+        name: t.name || '—',
+        pan: t.pan || '—',
+        assessmentYear: t.assessmentYear || '2024-25',
+        financialYear: fy,
         itrType,
         regime,
         filingSection
       },
       personalInfo: {
-        fullName: t.name,
-        fatherName: t.fatherName || '',
-        pan: t.pan,
-        dob: t.dob || '',
-        aadhaar: t.aadhaar || '',
-        mobile: t.mobile || '',
-        email: t.email || '',
+        fullName: t.name || '—',
+        fatherName: t.fatherName || '—',
+        pan: t.pan || '—',
+        dob: t.dob || '—',
+        aadhaar: t.aadhaar || '—',
+        mobile: t.mobile || '—',
+        email: t.email || '—',
         residentialStatus: t.residentStatus || 'Individual',
-        address,
+        address: `${t.address || ''}${t.pinCode ? ` — ${t.pinCode}` : ''}`.trim() || '—',
         itrForm: itrType,
         taxRegime: regime,
         filingSection,
-        assessmentYear: t.assessmentYear,
-        financialYear: fy || t.financialYear,
-        ackNumber,
-        filingDate
+        assessmentYear: t.assessmentYear || '2024-25',
+        financialYear: fy,
+        ackNumber: detail?.ackNumber || '—',
+        filingDate: detail?.filingDate || '—'
       },
       businessInfo: {
-        name: t.businessName || '',
-        code: t.businessCode || '',
+        name: t.businessName || '—',
+        code: t.businessCode || '—',
         nature: t.natureOfBusiness || '—',
         profile: 'Retail Trade',
         sectionApplied: t.type === 'professional' ? '44ADA – Presumptive' : '44AD – Presumptive',
-        booksOfAccount: totalAssets > 0 ? 'Maintained (Sec 44AA)' : 'Not Required (44AD)',
+        booksOfAccount: totalAssets > 0 || totalLiabilities > 0 ? 'Maintained (Sec 44AA)' : 'Not Required',
         taxRegime: regime,
         bankName: t.bankName || '—',
         accountNo: t.accountNo || '—',
         ifscCode: t.ifsc || '—',
         accountType: t.accountType || '—',
-        refundDue: refund > 0 ? formatCurrency(refund) : 'Nil'
+        refundDue: refund > 0 ? displayAmount(refund) : 'Nil'
       },
       businessIncome: {
-        turnover: { banking, cash: cashTurnover, total: banking + cashTurnover },
-        minimum: { sixPercent: minBanking6, eightPercent: minCash8, total: minTotal },
-        declared: { banking: declaredBanking, cash: declaredCash, total: declaredTotal },
+        turnover: { banking: bankingReceipts, cash: cashReceipts, total: sales },
+        minimum: { sixPercent, eightPercent, total: sixPercent + eightPercent },
+        declared: { banking: declaredBankingAmt, cash: declaredCashAmt, total: declaredIncome },
         npPercentage
       },
       taxComputation: {
         incomeSchedule: {
           salary: 0,
           houseProperty: 0,
-          business: inc.businessIncome,
-          otherSources: inc.otherSources,
-          otherSourcesBreakdown: detail?.otherSourcesBreakdown,
-          grossTotal: inc.total,
-          deductions: tax.totalDeductions,
-          totalIncome: tax.taxableIncome
+          business: declaredIncome,
+          otherSources,
+          savingsInterest,
+          otherIncome,
+          grossTotal: cleanNumber(inc.total),
+          deductions: cleanNumber(tax.totalDeductions),
+          totalIncome: cleanNumber(tax.taxableIncome)
         },
         taxDetails: {
-          taxOnIncome: tax.taxBeforeCess,
-          surcharge: tax.surcharge,
-          cess: tax.healthCess,
-          grossLiability: tax.totalTax,
-          rebate: tax.rebate,
+          taxOnIncome,
+          surcharge: cleanNumber(tax.surcharge),
+          cess,
+          grossLiability: taxLiability,
+          rebate,
           interest,
-          netPayable
+          netPayable: taxLiability + interest - rebate
         },
-        taxPaid: { advanceTax, tds, tcs, selfAssessment: selfAssessmentTax, totalPaid },
+        taxPaid: {
+          advanceTax,
+          tds,
+          tcs: cleanNumber(detail?.taxesPaid?.tcs ?? 0),
+          selfAssessment,
+          totalPaid: totalTaxPaid
+        },
         refundPayable: { refund, netPayable }
       },
       pnl: {
         sales,
-        closingStock: inventories,
-        openingStock,
-        purchases,
-        grossProfit,
-        operatingExpenses,
-        depreciation,
-        otherIncome: inc.otherSources,
-        netProfit: inc.businessIncome
+        closingStock,
+        openingStock: 0,
+        purchases: 0,
+        grossProfit: sales + closingStock,
+        operatingExpenses: 0,
+        depreciation: cleanNumber(data.depreciation.totalDepreciation),
+        otherIncome: otherSources,
+        netProfit: declaredIncome
       },
       balanceSheet: {
-        liabilities: { capital, securedLoans, unsecuredLoans, creditors, otherLiabilities, total: totalLiabilities },
-        assets: { fixedAssets, investments: 0, inventories, debtors, bank: bankBalance, cash: cashInHand, otherAssets, total: totalAssets },
+        liabilities: {
+          capital,
+          securedLoans: cleanNumber(financials.securedLoans),
+          unsecuredLoans: cleanNumber(financials.unsecuredLoans),
+          creditors,
+          otherLiabilities: cleanNumber(financials.otherLiabilities),
+          total: totalLiabilities
+        },
+        assets: {
+          fixedAssets: cleanNumber(financials.fixedAssets),
+          investments: 0,
+          inventories: closingStock,
+          debtors: cleanNumber(financials.debtors),
+          bank: cleanNumber(financials.bankBalance),
+          cash: cashInHand,
+          otherAssets: cleanNumber(financials.loansAndAdvances) + cleanNumber(financials.otherAssets),
+          total: totalAssets
+        },
         difference: Math.abs(totalLiabilities - totalAssets),
         reconciled: totalLiabilities === totalAssets
       },
-      capitalAccount: { openingCapital, netProfit: inc.businessIncome, drawings, closingCapital },
+      capitalAccount: {
+        openingCapital: 0,
+        netProfit: declaredIncome,
+        drawings: Math.max(0, declaredIncome - capital),
+        closingCapital: capital
+      },
       hisabCheck,
       declaration: {
-        name: t.name,
-        pan: t.pan,
-        aadhaar: t.aadhaar || '',
-        assessmentYear: t.assessmentYear,
+        name: t.name || '—',
+        pan: t.pan || '—',
+        aadhaar: t.aadhaar || '—',
+        assessmentYear: t.assessmentYear || '2024-25',
         itrType,
-        financialYear: fy || t.financialYear,
-        filingDate
+        financialYear: fy
       }
     };
   }

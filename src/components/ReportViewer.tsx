@@ -1,5 +1,6 @@
 import { useComputation } from '../hooks/useComputation';
 import { generatePdf } from '../pdf/pdfGenerator';
+import { renderReportHtml } from '../reports/reportRenderer';
 import { formatINR } from '../utils/currency';
 import type { ReportSection } from '../types';
 
@@ -17,6 +18,18 @@ export function ReportViewer({ sections, onBack }: ReportViewerProps) {
     if (normalizedData) generatePdf(normalizedData);
   };
 
+  const handleDownloadHtml = () => {
+    if (!normalizedData) return;
+    const html = renderReportHtml(normalizedData);
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `HISAB_${normalizedData.taxpayer.pan}_${normalizedData.taxpayer.assessmentYear.replace('-', '_')}_report.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="section">
       <div className="container">
@@ -27,6 +40,9 @@ export function ReportViewer({ sections, onBack }: ReportViewerProps) {
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             {onBack && <button className="btn-ghost" onClick={onBack}>← Back</button>}
+            <button className="btn-ghost" onClick={handleDownloadHtml} disabled={!normalizedData}>
+              ⬇ Download HTML
+            </button>
             <button className="btn-gold" onClick={handleDownload} disabled={!normalizedData}>
               ⬇ Download PDF
             </button>

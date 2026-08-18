@@ -1,3 +1,106 @@
+/**
+ * Format a number as Indian Rupee currency with proper comma separation
+ * Example: 14526643 → ₹1,45,26,643 (1.45 Crore)
+ * Example: 1030285 → ₹10,30,285 (10.30 Lakh)
+ * Example: 392799 → ₹3,92,799 (3.92 Lakh)
+ */
+export function formatCurrency(amount: number): string {
+  if (amount === undefined || amount === null || isNaN(amount) || amount === 0) {
+    return '₹0';
+  }
+
+  const num = Math.round(amount);
+
+  // Convert to string and handle Indian number system
+  let str = num.toString();
+  let result = '';
+
+  // Handle negative numbers
+  let isNegative = false;
+  if (str.startsWith('-')) {
+    isNegative = true;
+    str = str.substring(1);
+  }
+
+  // Indian numbering system: last 3 digits, then groups of 2
+  const lastThree = str.slice(-3);
+  const other = str.slice(0, -3);
+
+  if (other !== '') {
+    result = other.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' + lastThree;
+  } else {
+    result = lastThree;
+  }
+
+  return (isNegative ? '-₹' : '₹') + result;
+}
+
+/**
+ * Format currency without ₹ symbol for tables
+ */
+export function formatCurrencyPlain(amount: number): string {
+  if (amount === undefined || amount === null || isNaN(amount) || amount === 0) {
+    return '0';
+  }
+
+  const num = Math.round(amount);
+  let str = num.toString();
+  let result = '';
+
+  if (str.startsWith('-')) {
+    str = str.substring(1);
+  }
+
+  const lastThree = str.slice(-3);
+  const other = str.slice(0, -3);
+
+  if (other !== '') {
+    result = other.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' + lastThree;
+  } else {
+    result = lastThree;
+  }
+
+  return result;
+}
+
+/**
+ * Right-align currency with fixed width (for tables)
+ * Ensures all amounts align perfectly to the right
+ */
+export function rightAlignCurrency(amount: number, width: number = 14): string {
+  const formatted = formatCurrency(amount);
+  return formatted.padStart(width);
+}
+
+/**
+ * Right-align currency without ₹ symbol
+ */
+export function rightAlignCurrencyPlain(amount: number, width: number = 14): string {
+  const formatted = formatCurrencyPlain(amount);
+  return formatted.padStart(width);
+}
+
+/**
+ * Clean a number from JSON (remove extra zeros, fix formatting)
+ */
+export function cleanNumber(value: unknown): number {
+  if (value === undefined || value === null || value === '') return 0;
+  const num = typeof value === 'string' ? parseFloat(value) : (value as number);
+  return isNaN(num) ? 0 : Math.round(num);
+}
+
+/**
+ * Format for display in reports with proper Indian number system
+ */
+export function displayAmount(amount: number, showRupee: boolean = true): string {
+  if (amount === undefined || amount === null || isNaN(amount)) {
+    return showRupee ? '₹0' : '0';
+  }
+  return showRupee ? formatCurrency(amount) : formatCurrencyPlain(amount);
+}
+
+/* ============ Legacy app utilities (kept for compatibility) ============ */
+
 export function formatINR(amount: number, options: { noDecimals?: boolean; sign?: boolean } = {}): string {
   const value = Math.round(amount);
   const sign = options.sign && value > 0 ? '+' : '';
@@ -5,10 +108,6 @@ export function formatINR(amount: number, options: { noDecimals?: boolean; sign?
   const formatted = abs.toLocaleString('en-IN');
   if (options.noDecimals) return `${sign}₹${formatted}`;
   return `${sign}₹${formatted}.00`;
-}
-
-export function formatCurrency(amount: number): string {
-  return formatINR(amount);
 }
 
 export function formatLakhs(amount: number): string {

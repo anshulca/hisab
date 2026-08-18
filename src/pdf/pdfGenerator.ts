@@ -343,12 +343,10 @@ function renderSection4(doc: jsPDF, r: ReportData, y: number): number {
     ['Income from House Property (B3)', '0'],
     [`Business Income u/s ${r.businessInfo.sectionApplied.startsWith('44AD') ? '44AD' : '44ADA'} (B1 = E8 = E2c)`, fmt(sched.business)]
   ];
-  if (sched.otherSourcesBreakdown && sched.otherSourcesBreakdown.length > 0) {
-    for (const os of sched.otherSourcesBreakdown) {
-      schedule.push([`Income from Other Sources — ${os.label}`, fmt(os.amount)]);
-    }
-  } else if (sched.otherSources > 0) {
+  if (sched.otherSources > 0) {
     schedule.push(['Income from Other Sources (B4)', fmt(sched.otherSources)]);
+    if (sched.savingsInterest > 0) schedule.push(['   — of which: Savings / Interest', fmt(sched.savingsInterest)]);
+    if (sched.otherIncome > 0) schedule.push(['   — of which: Other', fmt(sched.otherIncome)]);
   }
   schedule.push(['Gross Total Income (B5)', fmt(sched.grossTotal)]);
   schedule.push([`Less: Deductions u/s 80C–80U (C19)${r.header.regime.startsWith('New') ? ' — Nil under New Regime' : ''}`, fmt(sched.deductions)]);
@@ -535,6 +533,7 @@ function renderSection7(doc: jsPDF, r: ReportData, y: number): number {
 
 function renderDeclaration(doc: jsPDF, r: ReportData, y: number): number {
   const d = r.declaration;
+  const filingDate = r.personalInfo.filingDate;
 
   const decl: Array<[string, string | number]> = [
     ['Declaration', 'I / We solemnly declare that the information given in this return of income is correct, complete and truly stated.'],
@@ -565,7 +564,7 @@ function renderDeclaration(doc: jsPDF, r: ReportData, y: number): number {
   doc.setFontSize(8);
   doc.setTextColor(90, 88, 92);
   doc.text('Place:', MARGIN, y + 64);
-  doc.text(`Date: ${dash(d.filingDate || new Date().toISOString().slice(0, 10))}`, MARGIN, y + 78);
+  doc.text(`Date: ${dash(filingDate || new Date().toISOString().slice(0, 10))}`, MARGIN, y + 78);
   return y + 100;
 }
 
@@ -578,7 +577,7 @@ function renderFooter(doc: jsPDF) {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.5);
     doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
-    doc.text('Prepared automatically by HISAB — working file for the return computation', MARGIN, PAGE_H - 14);
+    doc.text('Prepared automatically by HISAB by CA Anshul Karwa — working file for the return computation', MARGIN, PAGE_H - 14);
     doc.text(`Page ${i} of ${pages}`, PAGE_W - MARGIN, PAGE_H - 14, { align: 'right' });
   }
 }

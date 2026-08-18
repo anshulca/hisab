@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>HISAB - ITR Computation Report</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 30px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* Branding */
+    .brand-header {
+      text-align: center;
+      padding: 10px 0;
+      border-bottom: 2px solid #d4a854;
+      margin-bottom: 24px;
+    }
+
+    .brand-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #1a2744;
+    }
+
+    .brand-header .tagline {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .brand-header .byline {
+      font-size: 11px;
+      color: #d4a854;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .brand-footer {
+      text-align: center;
+      padding: 10px 0;
+      border-top: 2px solid #d4a854;
+      margin-top: 24px;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .brand-footer .byline {
+      color: #d4a854;
+      font-weight: 600;
+    }
+
+    /* Summary Grid */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 16px 0 24px;
+    }
+
+    .summary-card {
+      background: #f5f6f8;
+      border-radius: 6px;
+      padding: 10px 14px;
+      text-align: center;
+      border-left: 3px solid #d4a854;
+    }
+
+    .summary-card .label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .summary-card .value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a2744;
+      margin-top: 2px;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.5px;
+    }
+
+    .summary-card .value.gold { color: #d4a854; }
+    .summary-card .value.green { color: #1a7a3a; }
+    .summary-card .value.red { color: #c0392b; }
+
+    /* Sections */
+    .section {
+      margin: 20px 0 16px;
+      border: 1px solid #e8e8e8;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      background: #1a2744;
+      color: white;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .section-header .sub {
+      font-weight: 400;
+      font-size: 11px;
+      color: #b0c4d8;
+      margin-left: 8px;
+    }
+
+    .section-body {
+      padding: 10px 14px;
+      background: #ffffff;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    table td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .label-cell {
+      color: #333;
+      font-weight: 400;
+    }
+
+    .amount-cell {
+      text-align: right;
+      font-family: 'Courier New', monospace;
+      font-weight: 500;
+      min-width: 120px;
+      padding-right: 4px;
+      letter-spacing: 0.3px;
+      font-size: 12px;
+    }
+
+    .total-row td {
+      font-weight: 700;
+      border-top: 2px solid #1a2744;
+      padding-top: 6px;
+    }
+
+    .total-row .label-cell {
+      color: #1a2744;
+    }
+
+    .total-row .amount-cell {
+      color: #1a2744;
+      font-weight: 700;
+    }
+
+    .highlight-row td {
+      background: #f8f6f0;
+    }
+
+    .gold-row td {
+      background: #f5efe0;
+      font-weight: 600;
+    }
+
+    .gold-row .amount-cell {
+      color: #b88b3a;
+    }
+
+    .sub-row td {
+      padding-left: 20px;
+      font-size: 11px;
+      color: #555;
+    }
+
+    /* Status */
+    .status-ok { color: #1a7a3a; font-weight: 600; }
+    .status-warn { color: #d4a854; font-weight: 600; }
+    .status-error { color: #c0392b; font-weight: 600; }
+
+    /* Declaration */
+    .declaration {
+      padding: 14px;
+      background: #f8f6f0;
+      border-radius: 6px;
+      margin-top: 12px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .declaration .signature {
+      margin-top: 10px;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .note {
+      font-size: 11px;
+      color: #888;
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    /* Print */
+    @media print {
+      body { padding: 15px 20px; font-size: 11px; }
+      .summary-card .value { font-size: 14px; }
+      table { font-size: 10px; }
+      .section { break-inside: avoid; page-break-inside: avoid; }
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 12px; }
+      .summary-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+      .summary-card .value { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Brand Header -->
+<div class="brand-header">
+  <h1>HISAB</h1>
+  <div class="tagline">JSON se Computation tak.</div>
+  <div class="byline">Prepared automatically by HISAB by CA Anshul Karwa — working file for the return computation</div>
+</div>
+
+<!-- Report Content -->
+<div id="report-content"></div>
+
+<!-- Brand Footer -->
+<div class="brand-footer">
+  <div class="byline">Prepared automatically by HISAB by CA Anshul Karwa — working file for the return computation</div>
+  <div style="margin-top: 2px; font-size: 10px; color: #999;">
+    HISAB · ITR Computation · By CA Anshul Karwa · hisab.studyfromnotes.com
+  </div>
+</div>
+
+</body>
+</html>
