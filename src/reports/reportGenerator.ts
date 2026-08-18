@@ -267,7 +267,12 @@ export class ReportGenerator {
         mobile: t.mobile || '—',
         email: t.email || '—',
         residentialStatus: t.residentStatus || 'Individual',
-        address: `${t.address || ''}${t.pinCode ? ` — ${t.pinCode}` : ''}`.trim() || '—',
+        address: (() => {
+          const raw = (t.address || '').trim();
+          return raw
+            ? t.pinCode && !raw.endsWith(t.pinCode) ? `${raw} — ${t.pinCode}` : raw
+            : t.pinCode ? `— ${t.pinCode}` : '—';
+        })(),
         itrForm: itrType,
         taxRegime: regime,
         filingSection,

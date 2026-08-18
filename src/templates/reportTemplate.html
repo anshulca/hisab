@@ -128,11 +128,13 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 12px;
+      table-layout: fixed;
     }
 
     table td {
       padding: 4px 6px;
       border-bottom: 1px solid #f0f0f0;
+      overflow-wrap: break-word;
     }
 
     table tr:last-child td {
@@ -144,14 +146,27 @@
       font-weight: 400;
     }
 
+    .value-cell {
+      text-align: left;
+      color: #333;
+      font-weight: 400;
+      word-break: break-word;
+    }
+
     .amount-cell {
       text-align: right;
       font-family: 'Courier New', monospace;
       font-weight: 500;
-      min-width: 120px;
+      white-space: nowrap;
       padding-right: 4px;
       letter-spacing: 0.3px;
       font-size: 12px;
+    }
+
+    .status-cell {
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      white-space: nowrap;
     }
 
     .total-row td {
