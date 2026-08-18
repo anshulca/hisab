@@ -4,6 +4,7 @@ import type { NormalizedITR } from '../types';
 import type { CompareResult } from '../calculation/comparisonEngine';
 import { formatINR } from '../utils/currency';
 import { ReportGenerator, type ReportData } from '../reports/reportGenerator';
+import { ensureRupeeFont } from './fonts';
 
 const INK: [number, number, number] = [26, 27, 34];
 const MUTED: [number, number, number] = [122, 118, 126];
@@ -25,9 +26,10 @@ const PAGE_W = 595.28;
 const PAGE_H = 841.89;
 const CONTENT_W = PAGE_W - MARGIN * 2;
 
-export function buildPdf(normalized: NormalizedITR, _options: PdfOptions = {}): jsPDF {
+export async function buildPdf(normalized: NormalizedITR, _options: PdfOptions = {}, initDoc?: jsPDF): Promise<jsPDF> {
   const report = new ReportGenerator().generate(normalized);
-  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const doc = initDoc ?? new jsPDF({ unit: 'pt', format: 'a4' });
+  await ensureRupeeFont(doc);
 
   let y = renderHeader(doc, report);
 
@@ -59,8 +61,8 @@ export function buildPdf(normalized: NormalizedITR, _options: PdfOptions = {}): 
   return doc;
 }
 
-export function generatePdf(normalized: NormalizedITR, options: PdfOptions = {}): void {
-  const doc = buildPdf(normalized, options);
+export async function generatePdf(normalized: NormalizedITR, options: PdfOptions = {}): Promise<void> {
+  const doc = await buildPdf(normalized, options);
   const fileName =
     options.fileName ?? `HISAB_${normalized.taxpayer.pan}_${normalized.taxpayer.assessmentYear.replace('-', '_')}.pdf`;
   doc.save(fileName);
@@ -69,7 +71,7 @@ export function generatePdf(normalized: NormalizedITR, options: PdfOptions = {})
 /* ================= helpers ================= */
 
 function fmt(v: number): string {
-  return formatINR(v);
+  return formatINR(v, { noDecimals: true });
 }
 
 function dash(v: string | number | undefined | null): string {
@@ -79,7 +81,7 @@ function dash(v: string | number | undefined | null): string {
 
 const tableBase = {
   margin: { left: MARGIN, right: MARGIN },
-  styles: { font: 'helvetica', fontSize: 9.5, textColor: INK as unknown as string, cellPadding: 7 },
+  styles: { font: 'Roboto', fontSize: 9.5, textColor: INK as unknown as string, cellPadding: 7 },
   headStyles: { fillColor: DARK as unknown as string, textColor: [255, 255, 255] as unknown as string, fontStyle: 'bold' },
   alternateRowStyles: { fillColor: PAPER as unknown as string }
 } as const;
@@ -98,18 +100,18 @@ function ensureSpace(doc: jsPDF, y: number, needed: number): number {
 function flowHead(doc: jsPDF, y: number, label: string, title: string, sub?: string, reserve = 420): number {
   y = ensureSpace(doc, y, reserve);
 
-  doc.setFont('helvetica', 'bold');
+  doc.setFont('Roboto', 'bold');
   doc.setFontSize(8.5);
   doc.setTextColor(GOLD[0], GOLD[1], GOLD[2]);
   doc.text(label.toUpperCase(), MARGIN, y);
 
-  doc.setFont('helvetica', 'bold');
+  doc.setFont('Roboto', 'bold');
   doc.setFontSize(14);
   doc.setTextColor(INK[0], INK[1], INK[2]);
   doc.text(title, MARGIN, y + 13);
 
   if (sub) {
-    doc.setFont('helvetica', 'normal');
+    doc.setFont('Roboto', 'normal');
     doc.setFontSize(8.5);
     doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
     doc.text(sub, MARGIN, y + 26);
@@ -123,7 +125,7 @@ function flowHead(doc: jsPDF, y: number, label: string, title: string, sub?: str
 
 function miniHead(doc: jsPDF, y: number, text: string): number {
   y = ensureSpace(doc, y, 220);
-  doc.setFont('helvetica', 'bold');
+  doc.setFont('Roboto', 'bold');
   doc.setFontSize(8.5);
   doc.setTextColor(GOLD[0], GOLD[1], GOLD[2]);
   doc.text(text.toUpperCase(), MARGIN, y);
@@ -194,16 +196,16 @@ function moneyTable(
 
 function statusLine(doc: jsPDF, y: number, ok: boolean, msg: string): number {
   y = ensureSpace(doc, y, 30);
-  doc.setFont('helvetica', 'bold');
+  doc.setFont('Roboto', 'bold');
   doc.setFontSize(9);
   doc.setTextColor(ok ? GREEN[0] : RED[0], ok ? GREEN[1] : RED[1], ok ? GREEN[2] : RED[2]);
-  doc.text(`${ok ? '✓' : '⚠'}  ${msg}`, MARGIN, y);
+  doc.text(`${ok ? 'OK' : 'CHECK'}  ${msg}`, MARGIN, y);
   return y + 14;
 }
 
 function footerNote(doc: jsPDF, y: number, text: string): number {
   y = ensureSpace(doc, y, 34);
-  doc.setFont('helvetica', 'normal');
+  doc.setFont('Roboto', 'normal');
   doc.setFontSize(8);
   doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
   const lines = doc.splitTextToSize(text, CONTENT_W);
@@ -227,12 +229,12 @@ function renderHeader(doc: jsPDF, r: ReportData): number {
   doc.setFillColor(GOLD[0], GOLD[1], GOLD[2]);
   doc.rect(0, 0, 5, 74, 'F');
 
-  doc.setFont('helvetica', 'bold');
+  doc.setFont('Roboto', 'bold');
   doc.setFontSize(17);
   doc.setTextColor(255, 255, 255);
   doc.text('WORKING FILE — COMPUTATION OF INCOME & TAX', MARGIN, 34);
 
-  doc.setFont('helvetica', 'normal');
+  doc.setFont('Roboto', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(200, 190, 175);
   doc.text(`${h.name.toUpperCase()}  ·  PAN ${h.pan}  ·  AY ${h.assessmentYear}  ·  FY ${h.financialYear}  ·  ${h.itrType.toUpperCase()}`, MARGIN, 54);
@@ -552,11 +554,11 @@ function renderDeclaration(doc: jsPDF, r: ReportData, y: number): number {
   doc.setLineWidth(0.6);
   doc.line(MARGIN, y + 30, PAGE_W - MARGIN, y + 30);
 
-  doc.setFont('helvetica', 'bold');
+  doc.setFont('Roboto', 'bold');
   doc.setFontSize(9);
   doc.setTextColor(INK[0], INK[1], INK[2]);
   doc.text(d.name.toUpperCase(), PAGE_W - MARGIN, y + 64, { align: 'right' });
-  doc.setFont('helvetica', 'normal');
+  doc.setFont('Roboto', 'normal');
   doc.setFontSize(8);
   doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
   doc.text('Signature of Assessee', PAGE_W - MARGIN, y + 78, { align: 'right' });
@@ -578,13 +580,13 @@ function renderFooter(doc: jsPDF) {
     doc.setPage(i);
 
     doc.setGState(new gs.GState({ opacity: 0.09 }));
-    doc.setFont('helvetica', 'bold');
+    doc.setFont('Roboto', 'bold');
     doc.setFontSize(42);
     doc.setTextColor(150, 148, 150);
     doc.text('CA Anshul Karwa', PAGE_W / 2, PAGE_H / 2, { align: 'center', angle: 30 });
     doc.setGState(new gs.GState({ opacity: 1 }));
 
-    doc.setFont('helvetica', 'normal');
+    doc.setFont('Roboto', 'normal');
     doc.setFontSize(7.5);
     doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
     doc.text('Prepared automatically by HISAB by CA Anshul Karwa — working file for the return computation', MARGIN, PAGE_H - 14);
@@ -594,8 +596,9 @@ function renderFooter(doc: jsPDF) {
 
 /* ================= Compare PDF ================= */
 
-export function generateComparePdf(result: CompareResult, options: PdfOptions = {}): void {
+export async function generateComparePdf(result: CompareResult, options: PdfOptions = {}): Promise<void> {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  await ensureRupeeFont(doc);
   const margin = MARGIN;
   const width = PAGE_W;
   const n = result.curr;
@@ -607,12 +610,12 @@ export function generateComparePdf(result: CompareResult, options: PdfOptions = 
   doc.rect(0, 0, 5, 74, 'F');
 
   doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold');
+  doc.setFont('Roboto', 'bold');
   doc.setFontSize(17);
   doc.text('HISAB — Year-on-Year Comparison', margin, 34);
 
   doc.setTextColor(200, 190, 175);
-  doc.setFont('helvetica', 'normal');
+  doc.setFont('Roboto', 'normal');
   doc.setFontSize(9);
   doc.text(`PREPARED FOR ${n.taxpayer.name} · PAN ${n.taxpayer.pan}`, margin, 54);
 
@@ -665,11 +668,11 @@ export function generateComparePdf(result: CompareResult, options: PdfOptions = 
   }
 
   if (result.alerts.length > 0) {
-    doc.setFont('helvetica', 'bold');
+    doc.setFont('Roboto', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(GOLD[0], GOLD[1], GOLD[2]);
     doc.text('Reconciliation Alerts', margin, cursorY + 24);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont('Roboto', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(90, 90, 100);
     let y = cursorY + 44;

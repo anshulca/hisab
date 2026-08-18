@@ -12,8 +12,8 @@ export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
   const { normalizedData, taxpayer, income, tax, isReady, reportSections } = useComputation();
   const upload = useComputationStore((s) => s.upload);
 
-  const handleDownload = () => {
-    if (normalizedData) generatePdf(normalizedData);
+  const handleDownload = async () => {
+    if (normalizedData) await generatePdf(normalizedData);
   };
 
   const reconciliation = reportSections.find((s) => s.id === 'reconciliation');

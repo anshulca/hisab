@@ -14,8 +14,8 @@ export function ReportViewer({ sections, onBack }: ReportViewerProps) {
 
   const reportSections = sections ?? normalizedData?.reportSections ?? [];
 
-  const handleDownload = () => {
-    if (normalizedData) generatePdf(normalizedData);
+  const handleDownload = async () => {
+    if (normalizedData) await generatePdf(normalizedData);
   };
 
   const handleDownloadHtml = () => {

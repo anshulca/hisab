@@ -118,7 +118,7 @@ export function CompareWorkspace({ onNavigate }: CompareWorkspaceProps) {
             Generate Comparison <i className="fas fa-arrow-right" />
           </button>
           {report && (
-            <button className="btn-ghost" onClick={() => generateComparePdf(report)}>⬇ Download PDF</button>
+            <button className="btn-ghost" onClick={async () => { if (report) await generateComparePdf(report); }}>⬇ Download PDF</button>
           )}
           <button className="btn-ghost" onClick={() => onNavigate('app')}>← Single File Mode</button>
         </div>
