@@ -125,6 +125,7 @@ export interface NormalizedITR {
   computedAt: string;
   itrForm?: ITRForm;
   itr1?: Itr1Detail;
+  itr3?: Itr3Detail;
   detail?: {
     turnoverBanking: number;
     turnoverCash: number;
@@ -329,4 +330,277 @@ export interface Itr1Detail {
   refundReported: Valued;
   bank: Itr1BankDetail | null;
   ltcPresent: boolean;
+}
+
+/*
+ * ============================================================
+ * ITR-3 model — Individuals / HUFs with business or profession
+ * Mirrors the ITR-1 model conventions (Valued + SourceTag).
+ * All additions optional/backward compatible.
+ * ============================================================
+ */
+
+export interface Itr3Employer {
+  name: string;
+  tan: string;
+  natureOfEmployment: string;
+  address: string;
+}
+
+export interface Itr3Salary {
+  employers: Itr3Employer[];
+  grossSalary: Valued;
+  exemptAllowances: Valued;
+  hra: {
+    present: boolean;
+    hraReceived: Valued;
+    rentPaid: Valued;
+    eligibleExemption: Valued;
+  };
+  netSalary: Valued;
+  standardDeduction16ia: Valued;
+  professionalTax16iii: Valued;
+  incomeFromSalary: Valued;
+}
+
+export interface Itr3HouseProperty {
+  propertyNo: number;
+  address: string;
+  owner: string;
+  coOwned: boolean;
+  share: number;
+  letOut: string;
+  tenant: string;
+  annualLetableValue: Valued;
+  rentNotRealized: Valued;
+  municipalTaxes: Valued;
+  balanceALV: Valued;
+  std30: Valued;
+  interestOnBorrowedCapital: Valued;
+  arrearsUnrealizedRent: Valued;
+  incomeOrLoss: Valued;
+}
+
+export interface Itr3BusinessInfo {
+  naturesOfBusiness: Array<{ code: string; tradeName: string; description: string }>;
+  methodOfAccounting: string;
+  booksOfAccount: string;
+  audited: string;
+  turnoverBand: string;
+  profitBeforeTax: Valued;
+  balancePL: Valued;
+  netPL: Valued;
+  depreciation: Valued;
+  adjustedPL: Valued;
+  incomeChargeable: Valued;
+}
+
+export interface Itr3DepreciationBlock {
+  block: string;
+  rate: number;
+  openingWdv: number;
+  additions: number;
+  sales: number;
+  depreciation: number;
+  closingWdv: number;
+}
+
+export interface Itr3BalanceSheet {
+  present: boolean;
+  liabilities: {
+    capital: number;
+    securedLoans: number;
+    unsecuredLoans: number;
+    otherLiabilities: number;
+    total: number;
+  };
+  assets: {
+    fixedAssets: number;
+    investments: number;
+    inventories: number;
+    debtors: number;
+    bank: number;
+    cash: number;
+    otherAssets: number;
+    total: number;
+  };
+  difference: number;
+}
+
+export interface Itr3PnL {
+  present: boolean;
+  salesOrReceipts: number;
+  otherIncome: number;
+  expenses: Array<{ label: string; amount: number }>;
+  pbdt: number;
+  pbt: number;
+  netProfit: number;
+}
+
+export interface Itr3CapGainItem {
+  label: string;
+  fullConsideration: number;
+  cost: number;
+  expenses: number;
+  amount: number;
+}
+
+export interface Itr3CapitalGains {
+  stcg112A: Itr3CapGainItem | null;
+  stcg2167: Itr3CapGainItem | null;
+  stcgOther: Itr3CapGainItem | null;
+  ltcg112A: Itr3CapGainItem | null;
+  ltcg125: Itr3CapGainItem | null;
+  totalStcg: number;
+  totalLtcg: number;
+  total: number;
+}
+
+export interface Itr3OtherSourcesItem {
+  label: string;
+  amount: number;
+}
+
+export interface Itr3OtherSources {
+  savingsInterest: Valued;
+  termDepositInterest: Valued;
+  otherInterest: Valued;
+  others: Itr3OtherSourcesItem[];
+  total: Valued;
+}
+
+export interface Itr3LossHead {
+  head: string;
+  incomeCurrent: number;
+  afterSetOff: number;
+}
+
+export interface Itr3CfLoss {
+  year: string;
+  dateOfFiling: string;
+  businessLoss: number;
+  specBusinessLoss: number;
+  specifiedBusinessLoss: number;
+  stcgLoss: number;
+  ltcgLoss: number;
+  hpLoss: number;
+  otherSourceLoss: number;
+}
+
+export interface Itr3ChapterVia {
+  breakdown: Array<{ code: string; label: string; amount: number }>;
+  total: number;
+}
+
+export interface Itr3AmtDetail {
+  adjustedTotalIncome: number;
+  amtTax: number;
+  amtCreditAvailable: number;
+  amtCreditCarriedForward: Array<{ year: string; credit: number }>;
+}
+
+export interface Itr3SpecialIncome {
+  code: string;
+  rate: number;
+  amount: number;
+  tax: number;
+}
+
+export interface Itr3TaxLiabilityDetail {
+  taxNormal: number;
+  taxSpecialRates: number;
+  surcharge: number;
+  educationCess: number;
+  grossTaxLiability: number;
+  taxRelief: number;
+  netTaxLiability: number;
+  interest234A: number;
+  interest234B: number;
+  interest234C: number;
+  lateFee234F: number;
+  totalInterest: number;
+  aggregateLiability: number;
+}
+
+export interface Itr3TaxesPaid {
+  advanceTax: number;
+  tds: number;
+  tcs: number;
+  selfAssessmentTax: number;
+  total: number;
+  balancePayable: number;
+  challans: Array<{ bsrCode: string; date: string; cino: string; amount: number }>;
+  tdsSalary: Array<{ name: string; tan: string; income: number; tds: number }>;
+  tdsOther: Array<{ deductor: string; tan: string; section: string; grossAmount: number; tds: number; head: string }>;
+}
+
+export interface Itr3RefundInfo {
+  refundDue: number;
+  banks: Array<{ name: string; accountNo: string; ifsc: string; accountType: string; useForRefund: boolean }>;
+}
+
+export interface Itr3Verification {
+  name: string;
+  fatherName: string;
+  pan: string;
+  capacity: string;
+  date: string;
+  place: string;
+}
+
+export interface Itr3Detail {
+  form: 'ITR3';
+  assessmentYear: string;
+  financialYear: string;
+  regime: TaxRegime;
+  personal: {
+    name: string;
+    pan: string;
+    fatherName: string;
+    dob: string;
+    aadhaar: string;
+    mobile: string;
+    email: string;
+    address: string;
+    city: string;
+    state: string;
+    pinCode: string;
+    status: string;
+    residentStatus: string;
+    filingSection: string;
+    returnFileSec: number;
+    ackNumber: string;
+    filingDate: string;
+  };
+  salary: Itr3Salary;
+  houseProperties: Itr3HouseProperty[];
+  business: Itr3BusinessInfo;
+  depreciation: {
+    blocks: Itr3DepreciationBlock[];
+    totalDepreciation: number;
+  };
+  balanceSheet: Itr3BalanceSheet;
+  pnl: Itr3PnL;
+  capitalGains: Itr3CapitalGains;
+  otherSources: Itr3OtherSources;
+  cyla: Itr3LossHead[];
+  bfla: Itr3LossHead[];
+  cfl: Itr3CfLoss[];
+  via: Itr3ChapterVia;
+  amt: Itr3AmtDetail;
+  specialIncomes: Itr3SpecialIncome[];
+  income: {
+    salary: number;
+    houseProperty: number;
+    business: number;
+    capitalGains: number;
+    otherSources: number;
+    grossTotal: number;
+    totalIncome: number;
+    aggregateIncome: number;
+  };
+  taxComputed: Itr3TaxLiabilityDetail;
+  taxesPaid: Itr3TaxesPaid;
+  refund: Itr3RefundInfo;
+  verification: Itr3Verification;
 }

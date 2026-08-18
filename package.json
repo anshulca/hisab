@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:itr3": "node scripts/itr3-smoke.mjs && node scripts/itr3-pdf-test.mjs"
   },
   "dependencies": {
     "react": "^18.2.0",
