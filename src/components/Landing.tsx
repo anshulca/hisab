@@ -163,8 +163,8 @@ export function Landing({ onGenerate }: LandingProps) {
               <h4>Blazing fast</h4><p>From upload to reports in seconds. No waiting, no delays.</p>
             </div>
             <div className="feel-card">
-              <div className="icon"><i className="fas fa-cube" /></div>
-              <h4>Bouncy & alive</h4><p>Every hover, click, and transition feels responsive and energetic.</p>
+              <div className="icon"><i className="fas fa-award" /></div>
+              <h4>Made by CA Developer</h4><p>By CA Anshul Karwa — a qualified Chartered Accountant with experience of Big 4 and a listed company of India.</p>
             </div>
             <div className="feel-card">
               <div className="icon"><i className="fas fa-shield-alt" /></div>
