@@ -17,6 +17,7 @@ import { Workspace } from './components/Workspace';
 import { CompareWorkspace } from './components/CompareWorkspace';
 import { ReportViewer } from './components/ReportViewer';
 import { Footer } from './components/Footer';
+import { LegalPage, type LegalTab } from './components/LegalPage';
 
 function App() {
   const store = useComputationStore();
@@ -80,6 +81,12 @@ function App() {
             onFinalize={handleFinalize}
           />
         );
+      case 'legal':
+      case 'legal:faq':
+      case 'legal:privacy':
+      case 'legal:terms':
+      case 'legal:disclaimer':
+        return <LegalPage key={activeSection} initialTab={activeSection.split(':')[1] as LegalTab} onNavigate={setActiveSection} />;
       default:
         return <Landing onGenerate={() => setActiveSection('app')} />;
     }
