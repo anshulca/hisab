@@ -54,17 +54,23 @@ function keyShield(e: KeyboardEvent): void {
 
 function initKeyGuard(): void {
   window.addEventListener('keydown', keyShield, true);
+  window.addEventListener('keyup', keyShield, true);
 }
 
 function initContextGuard(): void {
-  document.addEventListener(
-    'contextmenu',
-    (e) => {
-      blockEvent(e);
-      showShield('Right-click is disabled on HISAB.');
-    },
-    true
-  );
+  const guard = (e: MouseEvent): void => {
+    blockEvent(e);
+    showShield('Right-click is disabled on HISAB.');
+  };
+  document.addEventListener('contextmenu', guard, true);
+  window.addEventListener('contextmenu', guard, true);
+
+  const mouseButtonGuard = (e: MouseEvent): void => {
+    if (e.button !== 2) return;
+    e.preventDefault();
+  };
+  document.addEventListener('mousedown', mouseButtonGuard, true);
+  document.addEventListener('mouseup', mouseButtonGuard, true);
 }
 
 function initClipboardGuards(): void {

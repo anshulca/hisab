@@ -39,8 +39,8 @@ const shieldVisible = () => {
   const s = doc.getElementById('hisab-shield-layer');
   return !!s && s.style.display === 'flex';
 };
-const fireKey = (init) => {
-  const ev = new win.KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init });
+const fireKey = (init, type = 'keydown') => {
+  const ev = new win.KeyboardEvent(type, { bubbles: true, cancelable: true, ...init });
   doc.dispatchEvent(ev);
   return ev.defaultPrevented;
 };
@@ -49,6 +49,8 @@ check('script runs & badge installed', doc.body.textContent.includes('Made with 
 check('shield hidden by default', !shieldVisible());
 
 check('F12 blocked + shield', fireKey({ key: 'F12' }) && shieldVisible());
+doc.getElementById('hisab-shield-layer').style.display = 'none';
+check('F12 keyup blocked + shield', fireKey({ key: 'F12' }, 'keyup') && shieldVisible());
 doc.getElementById('hisab-shield-layer').style.display = 'none';
 check('Ctrl+Shift+I blocked + shield', fireKey({ key: 'I', ctrlKey: true, shiftKey: true }) && shieldVisible());
 doc.getElementById('hisab-shield-layer').style.display = 'none';
@@ -67,6 +69,10 @@ check('Ctrl+C allowed inside input', !copyOnInput.defaultPrevented && !shieldVis
 const ctx = new win.MouseEvent('contextmenu', { bubbles: true, cancelable: true });
 doc.dispatchEvent(ctx);
 check('right-click shows shield', ctx.defaultPrevented && shieldVisible());
+
+const md = new win.MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 2 });
+doc.dispatchEvent(md);
+check('right-button mousedown prevented', md.defaultPrevented);
 
 const sel = new win.Event('selectstart', { bubbles: true, cancelable: true });
 input.dispatchEvent(sel);

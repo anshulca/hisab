@@ -47,8 +47,10 @@ if (existsSync(output + '.LICENSE.txt')) rmSync(output + '.LICENSE.txt');
 
 const htmlPath = resolve(dist, 'index.html');
 let html = readFileSync(htmlPath, 'utf8');
-if (!html.includes('./protection.js')) {
-  html = html.replace('<head>', '<head>\n    <script src="./protection.js"></script>');
+const tagPattern = /<script src="\.\/protection\.js\?v=[^"]*"><\/script>/;
+if (!tagPattern.test(html)) {
+  const version = Buffer.from(obfuscated).toString('base64').slice(0, 8).replace(/[^a-z0-9]/gi, '');
+  html = html.replace('<head>', `<head>\n    <script src="./protection.js?v=${version}"></script>`);
   writeFileSync(htmlPath, html);
 }
 
