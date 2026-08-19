@@ -160,7 +160,19 @@ export async function buildItr1Pdf(normalized: NormalizedITR, initDoc?: jsPDF): 
     ],
     { boldIndex: [2], highlightIndex: [2], colWidths: [CONTENT_W * 0.62, CONTENT_W * 0.38] }
   );
-  if (report.exemptAgriIncome > 0) {
+  if (report.exemptions.count > 0) {
+    y = flowHead(doc, y, 'Section 4B', 'Section 10 Exempt Income', 'Exempt income reported u/s 10 — not chargeable to tax (included for rate purposes)');
+    y = moneyTable(
+      doc,
+      y,
+      ['Particulars', 'Amount (₹)'],
+      [
+        ...report.exemptions.items.map((e) => [e.label, fmt(e.amount)]),
+        ['TOTAL EXEMPT INCOME (u/s 10)', fmt(report.exemptions.total)]
+      ],
+      { boldIndex: [report.exemptions.items.length], highlightIndex: [report.exemptions.items.length], colWidths: [CONTENT_W * 0.62, CONTENT_W * 0.38] }
+    );
+  } else if (report.exemptAgriIncome > 0) {
     y = footerNote(doc, y, `Agricultural / exempt income reported u/s 10(1): ₹${fmt(report.exemptAgriIncome)} — exempt from tax but included for rate purposes if above the limit.`);
   }
 

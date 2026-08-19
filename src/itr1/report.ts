@@ -64,6 +64,7 @@ export interface I1ReportData {
   otherSourcesTotal: number;
   savingsInterestDeduction: number;
   exemptAgriIncome: number;
+  exemptions: { count: number; total: number; items: Array<{ label: string; amount: number }> };
   deductions: Array<{ code: string; amount: number }>;
   totalDeductions: number;
   ltc: { saleConsideration: number; costOfAcquisition: number; gain: number; present: boolean };
@@ -254,6 +255,11 @@ export function buildItr1Report(data: NormalizedITR): I1ReportData {
     otherSourcesTotal: money(d.otherSourcesTotal),
     savingsInterestDeduction: money(d.savingsInterestDeduction),
     exemptAgriIncome: money(d.exemptAgriIncome),
+    exemptions: {
+      count: d.exemptIncomeSection10.details.length,
+      total: d.exemptIncomeSection10.total,
+      items: d.exemptIncomeSection10.details.map((e) => ({ label: e.label, amount: e.amount }))
+    },
     deductions: d.deductions.map((x) => ({ code: x.code, amount: money(x.amount) })),
     totalDeductions: money(d.totalDeductions),
     ltc: {

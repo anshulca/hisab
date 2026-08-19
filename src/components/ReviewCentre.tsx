@@ -11,6 +11,12 @@ interface ReviewCentreProps {
 export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
   const { normalizedData, taxpayer, income, tax, isReady, reportSections } = useComputation();
   const upload = useComputationStore((s) => s.upload);
+  const reset = useComputationStore((s) => s.reset);
+
+  const handleTryAgain = () => {
+    reset();
+    onNavigate('app');
+  };
 
   const handleDownload = async () => {
     if (normalizedData) await generatePdf(normalizedData);
@@ -65,6 +71,13 @@ export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
           <div style={{ display: 'flex', gap: 10 }}>
             <button className="btn-ghost" onClick={handleDownload}>⬇ PDF</button>
             <button className="btn-gold" onClick={() => onNavigate('hisabCheck')}>Final Hisab →</button>
+            <button
+              className="btn-ghost"
+              onClick={handleTryAgain}
+              title="Clear the current file and upload a new one"
+            >
+              <i className="fas fa-redo" style={{ marginRight: 6 }} /> Try Another File
+            </button>
           </div>
         </div>
 

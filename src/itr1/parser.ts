@@ -289,8 +289,32 @@ export function parseItr1Object(input: unknown): Itr1ParseResult {
   };
   const ltcPresent = ltc112a.longTermGain.value > 0;
 
-  /* ---------- Agri / exempt income ---------- */
-  const exemptAgri = vJSON(obj(incomeDed.ExemptIncAgriOthUs10).ExemptIncAgriOthUs10Total);
+  /* ---------- Agri / exempt income u/s 10 ---------- */
+  const exemptIncNode = obj(incomeDed.ExemptIncAgriOthUs10);
+  const exemptAgri = vJSON(exemptIncNode.ExemptIncAgriOthUs10Total);
+
+  const exemptDetails: Itr1Detail['exemptIncomeSection10']['details'] = [];
+  const exemptDtlsRaw = exemptIncNode.ExemptIncAgriOthUs10Dtls;
+  const exemptDtls = Array.isArray(exemptDtlsRaw)
+    ? (exemptDtlsRaw as Array<Record<string, unknown>>)
+    : [];
+  for (const item of exemptDtls) {
+    const amount = num(item.OthAmount) ?? num(item.Amount);
+    const section = String(item.SubCategory ?? item.Section ?? '').trim();
+    const category = String(item.Category ?? '').trim();
+    if (!amount) continue;
+    const label =
+      category.toUpperCase() === 'AGRI'
+        ? 'Agricultural income u/s 10(1)'
+        : section
+          ? `Exempt income u/s ${section}`
+          : 'Other exempt income u/s 10';
+    exemptDetails.push({ amount, section, label });
+  }
+  const exemptTotal =
+    exemptDetails.length > 0
+      ? exemptDetails.reduce((sum, e) => sum + e.amount, 0)
+      : exemptAgri.value;
 
   /* ---------- Chapter VI-A deductions ---------- */
   const viaRaw = obj(incomeDed.UsrDeductUndChapVIA);
@@ -440,6 +464,7 @@ export function parseItr1Object(input: unknown): Itr1ParseResult {
     otherSourcesTotal,
     savingsInterestDeduction,
     exemptAgriIncome: exemptAgri,
+    exemptIncomeSection10: { total: exemptTotal, details: exemptDetails },
     deductions,
     totalDeductions,
     ltc112a,
@@ -651,6 +676,19 @@ function buildItr1ReportSections(d: Itr1Detail, regime: 'new' | 'old'): ReportSe
         money('Full value of consideration', d.ltc112a.saleConsideration),
         money('Less: Cost of acquisition', d.ltc112a.costOfAcquisition),
         money('Long-term capital gain', d.ltc112a.longTermGain, true)
+      ]
+    });
+  }
+
+  if (d.exemptIncomeSection10.total > 0) {
+    sections.push({
+      id: 'exemptions',
+      title: 'Section 10 Exempt Income',
+      summary: 'Exempt income reported under Section 10 of the Income-tax Act — not chargeable to tax.',
+      details: [
+        ...d.exemptIncomeSection10.details.map((e) => ({ label: e.label, value: e.amount })),
+        { label: 'Total Exempt Income (u/s 10)', value: d.exemptIncomeSection10.total, highlight: true },
+        { label: 'Note', value: 'Exempt income is excluded from tax, but is considered for rate purposes when aggregating income.' }
       ]
     });
   }

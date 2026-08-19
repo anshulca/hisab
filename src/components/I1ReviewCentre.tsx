@@ -138,6 +138,29 @@ export function I1ReviewCentre({ onNavigate }: I1ReviewCentreProps) {
           </div>
         )}
 
+        {d.exemptIncomeSection10.total > 0 && (
+          <div className="card" style={{ marginTop: 20 }}>
+            <h3 className="card-title">Section 10 Exempt Income</h3>
+            <p className="card-sub">Exempt income reported under Section 10 — not chargeable to tax (included for rate purposes).</p>
+            <div className="table-wrap" style={{ marginTop: 14 }}>
+              <table className="mini-table">
+                <tbody>
+                  {d.exemptIncomeSection10.details.map((e, i) => (
+                    <tr key={i}>
+                      <td>{e.label}</td>
+                      <td style={{ textAlign: 'right' }}>{formatINR(e.amount)}</td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td><strong>Total Exempt Income (u/s 10)</strong></td>
+                    <td style={{ textAlign: 'right' }} className="highlight"><strong>{formatINR(d.exemptIncomeSection10.total)}</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         <div className="card" style={{ marginTop: 20 }}>
           <h3 className="card-title">Working Sections</h3>
           <p className="card-sub">Open any section of the ITR-1 working file.</p>

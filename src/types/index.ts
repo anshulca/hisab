@@ -285,6 +285,10 @@ export interface Itr1Detail {
   otherSourcesTotal: Valued;
   savingsInterestDeduction: Valued;
   exemptAgriIncome: Valued;
+  exemptIncomeSection10: {
+    total: number;
+    details: Array<{ amount: number; section: string; label: string }>;
+  };
   deductions: Itr1Deduction[];
   totalDeductions: Valued;
   ltc112a: Itr1Ltc112a;

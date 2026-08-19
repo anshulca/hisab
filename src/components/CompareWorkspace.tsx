@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import type { NormalizedITR, ValidationIssue } from '../types';
-import { parseItr4Object } from '../parser/itr4Parser';
+import type { ValidationIssue } from '../types';
+import { parseAnyITRObject } from '../parser/parseAnyITR';
 import { compareYears, type CompareResult } from '../calculation/comparisonEngine';
 import { formatINR } from '../utils/currency';
 import { generateComparePdf } from '../pdf/pdfGenerator';
@@ -12,8 +12,8 @@ interface CompareWorkspaceProps {
 
 interface LoadedFile {
   fileName: string;
-  normalized: NormalizedITR;
   issues: ValidationIssue[];
+  parsed: ReturnType<typeof parseAnyITRObject>;
 }
 
 type SlotKey = 'prev' | 'curr';
@@ -33,8 +33,8 @@ export function CompareWorkspace({ onNavigate }: CompareWorkspaceProps) {
     try {
       const text = await file.text();
       const data = JSON.parse(stripBom(text).trim());
-      const { normalized, issues } = parseItr4Object(data);
-      const loaded: LoadedFile = { fileName: file.name, normalized, issues };
+      const parsed = parseAnyITRObject(data);
+      const loaded: LoadedFile = { fileName: file.name, issues: parsed.issues, parsed };
       if (slot === 'prev') { setPrev(loaded); setPrevError(null); }
       else { setCurr(loaded); setCurrError(null); }
     } catch (error) {
@@ -61,7 +61,7 @@ export function CompareWorkspace({ onNavigate }: CompareWorkspaceProps) {
   const canGenerate = Boolean(curr);
   const handleGenerate = () => {
     if (!curr) return;
-    setReport(compareYears(prev?.normalized ?? null, curr.normalized));
+    setReport(compareYears(prev?.parsed.normalized ?? null, curr.parsed.normalized));
   };
 
   const slotUi = (slot: SlotKey, label: string, hint: string, file: LoadedFile | null, error: string | null) => {
@@ -76,7 +76,7 @@ export function CompareWorkspace({ onNavigate }: CompareWorkspaceProps) {
           {file && (
             <p style={{ color: 'var(--gold)', fontSize: '0.85rem' }}>
               <i className="fas fa-check-circle" style={{ marginRight: 6 }} />
-              {file.fileName} · AY {file.normalized.taxpayer.assessmentYear}
+              {file.fileName} · {file.parsed.form} · AY {file.parsed.normalized.taxpayer.assessmentYear}
             </p>
           )}
           {error && !file && <p style={{ color: 'rgba(220,80,80,0.9)', fontSize: '0.8rem' }}>⚠ {error}</p>}

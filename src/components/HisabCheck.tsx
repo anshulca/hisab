@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useComputation } from '../hooks/useComputation';
+import { useComputationStore } from '../store/computationStore';
 import { formatINR } from '../utils/currency';
 
 interface HisabCheckProps {
@@ -23,9 +24,15 @@ const CHECK_ITEMS: CheckItem[] = [
 
 export function HisabCheck({ onNavigate }: HisabCheckProps) {
   const { tax, isReady } = useComputation();
+  const reset = useComputationStore((s) => s.reset);
   const [checked, setChecked] = useState<Record<string, boolean>>({});
 
   const toggle = (id: string) => setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  const handleTryAgain = () => {
+    reset();
+    onNavigate('app');
+  };
 
   if (!isReady || !tax) {
     return <div className="card" style={{ padding: 50, textAlign: 'center' }}><p style={{ color: 'var(--text-muted)' }}>Upload a file to begin the Hisab check.</p></div>;
@@ -36,9 +43,18 @@ export function HisabCheck({ onNavigate }: HisabCheckProps) {
   return (
     <div className="section">
       <div className="container" style={{ maxWidth: 860 }}>
-        <div className="section-head">
-          <h2 className="section-title">Hisab Check</h2>
-          <p className="section-sub">Verify each stage of the computation before finalizing.</p>
+        <div className="section-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 14 }}>
+          <div>
+            <h2 className="section-title">Hisab Check</h2>
+            <p className="section-sub">Verify each stage of the computation before finalizing.</p>
+          </div>
+          <button
+            className="btn-ghost"
+            onClick={handleTryAgain}
+            title="Clear the current file and upload a new one"
+          >
+            <i className="fas fa-redo" style={{ marginRight: 6 }} /> Try Another File
+          </button>
         </div>
 
         <div style={{ display: 'grid', gap: 14 }}>

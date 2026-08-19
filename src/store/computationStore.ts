@@ -1,9 +1,6 @@
 import { create } from 'zustand';
 import type { DepreciationAsset, FileUploadState, ITRForm, NormalizedITR, Taxpayer } from '../types';
-import { parseItr4Object } from '../parser/itr4Parser';
-import { parseItr1Object } from '../itr1/parser';
-import { parseItr3Object } from '../itr3/parser';
-import { detectITRForm } from '../itr/detectForm';
+import { parseAnyITRObject } from '../parser/parseAnyITR';
 
 function stripBom(text: string): string {
   return text.charCodeAt(0) === 0xfeff ? text.slice(1) : text;
@@ -55,40 +52,12 @@ export const useComputationStore = create<ComputationStoreState>((set) => ({
         );
       }
 
-      const detected = detectITRForm(data);
-      let parsed;
-      let form: ITRForm;
-
-      if (detected === 'ITR1') {
-        parsed = parseItr1Object(data);
-        form = 'ITR1';
-      } else if (detected === 'ITR3') {
-        parsed = parseItr3Object(data);
-        form = 'ITR3';
-      } else if (detected === 'ITR4') {
-        parsed = parseItr4Object(data);
-        form = 'ITR4';
-      } else {
-        // Detection failed — fall back by trying the parsers (each self-validates
-        // and throws if the structure does not match its form).
-        try {
-          parsed = parseItr1Object(data);
-          form = 'ITR1';
-        } catch {
-          try {
-            parsed = parseItr3Object(data);
-            form = 'ITR3';
-          } catch {
-            parsed = parseItr4Object(data);
-            form = 'ITR4';
-          }
-        }
-      }
+      const parsed = parseAnyITRObject(data);
       set({
         normalizedData: parsed.normalized,
         depreciationAssets: parsed.normalized.depreciation.assets,
         taxpayer: parsed.normalized.taxpayer,
-        itrForm: form,
+        itrForm: parsed.form,
         upload: {
           fileName,
           fileSize: new Blob([rawText]).size,
@@ -122,30 +91,14 @@ export const useComputationStore = create<ComputationStoreState>((set) => ({
       } catch {
         return { ok: false, error: 'This file could not be read as JSON. Please upload a valid ITR export.' };
       }
-      const detected = detectITRForm(data);
-      let normalized: NormalizedITR;
-      if (detected === 'ITR1') normalized = parseItr1Object(data).normalized;
-      else if (detected === 'ITR3') normalized = parseItr3Object(data).normalized;
-      else {
-        try {
-          normalized = parseItr4Object(data).normalized;
-        } catch {
-          try {
-            normalized = parseItr1Object(data).normalized;
-          } catch {
-            try {
-              normalized = parseItr3Object(data).normalized;
-            } catch {
-              throw new Error('The previous year file could not be parsed as ITR-1, ITR-3 or ITR-4.');
-            }
-          }
-        }
-      }
-      set({ prevData: normalized });
+      const parsed = parseAnyITRObject(data);
+      set({ prevData: parsed.normalized });
       return { ok: true };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Invalid JSON file. Please upload a valid ITR export.';
-      return { ok: false, error: message };
+    } catch (_) {
+      return {
+        ok: false,
+        error: 'The previous year file could not be parsed as ITR-1, ITR-3 or ITR-4. Please check the file and try again.'
+      };
     }
   },
 
