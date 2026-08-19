@@ -57,6 +57,7 @@ export function showShield(reason: string): void {
 }
 
 export function addCreditBadge(): void {
+  if (!document.body || document.querySelector('[data-hisab-badge]')) return;
   const badge = document.createElement('div');
   badge.setAttribute('data-hisab-badge', '');
   badge.style.cssText =

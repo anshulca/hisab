@@ -148,13 +148,19 @@ function initDevToolsDetection(): void {
 
 export function initProtection(): void {
   initShieldBasics();
-  addCreditBadge();
   initKeyGuard();
   initContextGuard();
   initClipboardGuards();
   initPrintGuard();
   initFrameBust();
   initDevToolsDetection();
+
+  if (document.body) {
+    addCreditBadge();
+  } else {
+    document.addEventListener('DOMContentLoaded', () => addCreditBadge());
+    window.addEventListener('load', () => addCreditBadge());
+  }
 }
 
 initProtection();

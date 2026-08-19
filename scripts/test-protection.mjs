@@ -17,6 +17,16 @@ const code = readFileSync(resolve(root, 'dist', 'protection.js'), 'utf8');
 
 const out = console.log.bind(console);
 
+function runInWindow(win) {
+  const fn = new win.Function(
+    'window', 'document', 'location', 'navigator', 'setInterval', 'setTimeout',
+    'HTMLElement', 'Event', 'KeyboardEvent', 'MouseEvent', 'CustomEvent', 'console', code
+  );
+  fn(win, win.document, win.location, win.navigator, win.setInterval, win.setTimeout,
+    win.HTMLElement, win.Event, win.KeyboardEvent, win.MouseEvent, win.CustomEvent,
+    { log: out, error: out });
+}
+
 const dom = new JSDOM('<!doctype html><html><body><div id="root"></div><input id="txt" type="text"></body></html>', {
   pretendToBeVisual: true,
   url: 'https://hisab.studyfromnotes.com/'
@@ -24,13 +34,7 @@ const dom = new JSDOM('<!doctype html><html><body><div id="root"></div><input id
 const win = dom.window;
 const doc = win.document;
 
-const fn = new win.Function(
-  'window', 'document', 'location', 'navigator', 'setInterval', 'setTimeout',
-  'HTMLElement', 'Event', 'KeyboardEvent', 'MouseEvent', 'CustomEvent', 'console', code
-);
-fn(win, doc, win.location, win.navigator, win.setInterval, win.setTimeout,
-  win.HTMLElement, win.Event, win.KeyboardEvent, win.MouseEvent, win.CustomEvent,
-  { log: out, error: out });
+runInWindow(win);
 
 const results = [];
 const check = (label, ok) => { results.push([label, ok]); };
@@ -77,6 +81,22 @@ check('right-button mousedown prevented', md.defaultPrevented);
 const sel = new win.Event('selectstart', { bubbles: true, cancelable: true });
 input.dispatchEvent(sel);
 check('selection allowed inside input', !sel.defaultPrevented);
+
+const headDom = new JSDOM('<!doctype html><html><head></head><body></body></html>', {
+  pretendToBeVisual: true,
+  url: 'https://hisab.studyfromnotes.com/'
+});
+headDom.window.document.documentElement.removeChild(headDom.window.document.body);
+runInWindow(headDom.window);
+const headDoc = headDom.window.document;
+const F12Head = new headDom.window.KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'F12' });
+headDoc.dispatchEvent(F12Head);
+const headBlocked = F12Head.defaultPrevented;
+headDom.window.document.documentElement.appendChild(headDom.window.document.createElement('body'));
+headDoc.dispatchEvent(new headDom.window.Event('DOMContentLoaded'));
+const headBadge = !!headDoc.querySelector('[data-hisab-badge]');
+check('runs in <head> without body, still blocks F12', headBlocked === true);
+check('credit badge appears after DOMContentLoaded', headBadge);
 
 let failed = 0;
 for (const [label, ok] of results) {
