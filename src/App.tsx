@@ -6,6 +6,9 @@ import { ReviewCentre } from './components/ReviewCentre';
 import { I1ReviewCentre } from './components/I1ReviewCentre';
 import { I1ReportViewer } from './components/I1ReportViewer';
 import { I1FinalHisabCheck } from './components/I1FinalHisabCheck';
+import { I2ReviewCentre } from './components/I2ReviewCentre';
+import { I2ReportViewer } from './components/I2ReportViewer';
+import { I2FinalHisabCheck } from './components/I2FinalHisabCheck';
 import { I3ReviewCentre } from './components/I3ReviewCentre';
 import { I3ReportViewer } from './components/I3ReportViewer';
 import { I3FinalHisabCheck } from './components/I3FinalHisabCheck';
@@ -42,6 +45,8 @@ function App() {
       case 'review':
         return store.itrForm === 'ITR1' ? (
           <I1ReviewCentre onNavigate={setActiveSection} />
+        ) : store.itrForm === 'ITR2' ? (
+          <I2ReviewCentre onNavigate={setActiveSection} />
         ) : store.itrForm === 'ITR3' ? (
           <I3ReviewCentre onNavigate={setActiveSection} />
         ) : (
@@ -50,6 +55,8 @@ function App() {
       case 'report':
         return store.itrForm === 'ITR1' ? (
           <I1ReportViewer onBack={() => setActiveSection('review')} />
+        ) : store.itrForm === 'ITR2' ? (
+          <I2ReportViewer onBack={() => setActiveSection('review')} />
         ) : store.itrForm === 'ITR3' ? (
           <I3ReportViewer onBack={() => setActiveSection('review')} />
         ) : (
@@ -73,6 +80,8 @@ function App() {
       case 'hisabCheck':
         return store.itrForm === 'ITR1' ? (
           <I1FinalHisabCheck onNavigate={setActiveSection} onFinalize={handleFinalize} />
+        ) : store.itrForm === 'ITR2' ? (
+          <I2FinalHisabCheck onNavigate={setActiveSection} onFinalize={handleFinalize} />
         ) : store.itrForm === 'ITR3' ? (
           <I3FinalHisabCheck onNavigate={setActiveSection} onFinalize={handleFinalize} />
         ) : (

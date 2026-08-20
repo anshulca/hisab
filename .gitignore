@@ -9,6 +9,10 @@ node_modules
 # Regression harness build output
 /scripts/.tmp-regress
 
+# Scratch / diagnostic build outputs
+/.tmp
+/scripts/.tmp-*.mjs
+
 # Production
 /dist
 /build

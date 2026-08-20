@@ -33,7 +33,7 @@ export function Workspace({ onNavigate }: WorkspaceProps) {
             Upload your <span style={{ color: 'var(--gold)' }}>ITR JSON</span>
           </h2>
           <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>
-            JSON se Computation tak - in one click. ITR-1 (SAHAJ), ITR-3 and ITR-4 (SUGAM) auto-detected.
+            JSON se Computation tak - in one click. ITR-1 (SAHAJ), ITR-2, ITR-3 & ITR-4 (SUGAM) auto-detected.
           </p>
         </div>
         <div style={{ maxWidth: 700, margin: '34px auto 70px' }}>

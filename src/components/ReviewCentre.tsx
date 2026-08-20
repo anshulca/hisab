@@ -32,7 +32,7 @@ export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
         <div className="container" style={{ textAlign: 'center', padding: 80 }}>
           <h2 className="section-title">No data yet</h2>
           <p className="section-sub" style={{ margin: '12px 0 24px' }}>
-            Upload an ITR-1, ITR-3 or ITR-4 JSON file to generate the computation.
+            Upload an ITR-1, ITR-2, ITR-3 or ITR-4 JSON file to generate the computation.
           </p>
           <button className="btn-gold" onClick={() => onNavigate('app')}>← Go to Upload</button>
         </div>

@@ -1,6 +1,7 @@
 import type { ITRForm, NormalizedITR, ValidationIssue } from '../types';
 import { parseItr4Object } from './itr4Parser';
 import { parseItr1Object } from '../itr1/parser';
+import { parseItr2Object } from '../itr2/parser';
 import { parseItr3Object } from '../itr3/parser';
 import { detectITRForm } from '../itr/detectForm';
 
@@ -11,13 +12,14 @@ export interface ParsedAnyITR {
 }
 
 /**
- * Parse an ITR JSON export of any supported form (ITR-1 / ITR-3 / ITR-4).
+ * Parse an ITR JSON export of any supported form (ITR-1 / ITR-2 / ITR-3 / ITR-4).
  * Uses structural detection first, then falls back to trying each parser
  * (each self-validates and throws if the structure does not match).
  */
 export function parseAnyITRObject(json: unknown): ParsedAnyITR {
   const detected = detectITRForm(json);
   if (detected === 'ITR1') return { ...parseItr1Object(json), form: 'ITR1' };
+  if (detected === 'ITR2') return { ...parseItr2Object(json), form: 'ITR2' };
   if (detected === 'ITR3') return { ...parseItr3Object(json), form: 'ITR3' };
   if (detected === 'ITR4') return { ...parseItr4Object(json), form: 'ITR4' };
   try {
@@ -26,7 +28,11 @@ export function parseAnyITRObject(json: unknown): ParsedAnyITR {
     try {
       return { ...parseItr3Object(json), form: 'ITR3' };
     } catch {
-      return { ...parseItr4Object(json), form: 'ITR4' };
+      try {
+        return { ...parseItr2Object(json), form: 'ITR2' };
+      } catch {
+        return { ...parseItr4Object(json), form: 'ITR4' };
+      }
     }
   }
 }

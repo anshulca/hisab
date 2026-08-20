@@ -21,7 +21,7 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'Which ITR forms are supported?',
-    a: 'ITR-1 (SAHAJ), ITR-3 and ITR-4 (SUGAM) JSON files are supported. The form is detected automatically from the file structure.'
+    a: 'ITR-1 (SAHAJ), ITR-2, ITR-3 and ITR-4 (SUGAM) JSON files are supported. The form is detected automatically from the file structure.'
   },
   {
     q: 'Which assessment years work?',

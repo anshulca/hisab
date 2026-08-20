@@ -125,6 +125,7 @@ export interface NormalizedITR {
   computedAt: string;
   itrForm?: ITRForm;
   itr1?: Itr1Detail;
+  itr2?: Itr2Detail;
   itr3?: Itr3Detail;
   detail?: {
     turnoverBanking: number;
@@ -193,7 +194,7 @@ export interface FileUploadState {
    compatible — nothing in the ITR-4 path depends on them.
    ============================================================ */
 
-export type ITRForm = 'ITR1' | 'ITR4' | 'ITR3' | 'UNKNOWN';
+export type ITRForm = 'ITR1' | 'ITR2' | 'ITR4' | 'ITR3' | 'UNKNOWN';
 
 /** Provenance tag used across the ITR-1 model (never label calculation as JSON). */
 export type SourceTag = 'JSON' | 'CALCULATED' | 'RECONSTRUCTED' | 'VERIFIED' | 'USER_INPUT';
@@ -606,5 +607,264 @@ export interface Itr3Detail {
   taxComputed: Itr3TaxLiabilityDetail;
   taxesPaid: Itr3TaxesPaid;
   refund: Itr3RefundInfo;
+  verification: Itr3Verification;
+}
+
+/*
+ * ============================================================
+ * ITR-2 model — Individuals / HUFs who do NOT have income from
+ * profits & gains of business or profession (salary, house
+ * property, capital gains, other sources, losses, VI-A, AMT,
+ * special-rate income, foreign tax relief).
+ * Mirrors the ITR-1 / ITR-3 conventions (Valued + SourceTag).
+ * ============================================================
+ */
+
+export interface Itr2Employer {
+  name: string;
+  tan: string;
+  natureOfEmployment: string;
+  address: string;
+}
+
+export interface Itr2Salary {
+  employers: Itr2Employer[];
+  grossSalary: Valued;
+  salaryComponent: Valued;
+  perquisites: Valued;
+  profitsInSalary: Valued;
+  exemptAllowances: Valued;
+  netSalary: Valued;
+  standardDeduction16ia: Valued;
+  entertainment16ii: Valued;
+  professionalTax16iii: Valued;
+  incomeFromSalary: Valued;
+}
+
+export interface Itr2HouseProperty {
+  propertyNo: number;
+  address: string;
+  owner: string;
+  letOut: string;
+  annualLetableValue: Valued;
+  rentNotRealized: Valued;
+  municipalTaxes: Valued;
+  balanceALV: Valued;
+  std30: Valued;
+  interestOnBorrowedCapital: Valued;
+  arrearsUnrealizedRent: Valued;
+  incomeOrLoss: Valued;
+}
+
+export interface Itr2CapGainItem {
+  label: string;
+  kind: 'STCG' | 'LTCG';
+  rate?: string;
+  fullConsideration: number;
+  cost: number;
+  expenses: number;
+  amount: number;
+}
+
+export interface Itr2CapitalGains {
+  items: Itr2CapGainItem[];
+  totalStcg: number;
+  totalLtcg: number;
+  total: number;
+  vdaIncome: number;
+}
+
+export interface Itr2OtherSourceItem {
+  label: string;
+  amount: number;
+}
+
+export interface Itr2OtherSources {
+  grossIncome: Valued;
+  dividend: number;
+  savingsInterest: number;
+  otherInterest: number;
+  deductions: Valued;
+  breakdown: Itr2OtherSourceItem[];
+  total: Valued;
+}
+
+export interface Itr2LossHead {
+  head: string;
+  incomeCurrent: number;
+  afterSetOff: number;
+}
+
+export interface Itr2CfLoss {
+  hpLoss: number;
+  stcgLoss: number;
+  ltcgLoss: number;
+  raceHorseLoss: number;
+}
+
+export interface Itr2ViaItem {
+  code: string;
+  label: string;
+  amount: number;
+}
+
+export interface Itr2Deduction80D {
+  self: number;
+  parents: number;
+  seniorCitizenSelf: number;
+  seniorCitizenParents: number;
+  eligibleAmount: number;
+}
+
+export interface Itr2ChapterVia {
+  breakdown: Itr2ViaItem[];
+  total: number;
+  section80d: Itr2Deduction80D | null;
+}
+
+export interface Itr2AmtDetail {
+  adjustedTotalIncome: number;
+  amtTax: number;
+  amtCreditAvailable: number;
+  amtCreditCarriedForward: Array<{ year: string; credit: number }>;
+}
+
+export interface Itr2SpecialIncome {
+  code: string;
+  label: string;
+  rate: number;
+  amount: number;
+  tax: number;
+}
+
+export interface Itr2ExemptIncome {
+  total: number;
+  details: Array<{ label: string; amount: number }>;
+}
+
+export interface Itr2BankDetail {
+  name: string;
+  accountNo: string;
+  ifsc: string;
+  accountType: string;
+  useForRefund: boolean;
+}
+
+export interface Itr2Challan {
+  bsrCode: string;
+  date: string;
+  cino: string;
+  amount: number;
+}
+
+export interface Itr2TdsSalary {
+  name: string;
+  tan: string;
+  income: number;
+  tds: number;
+}
+
+export interface Itr2TdsOther {
+  tan: string;
+  section: string;
+  grossAmount: number;
+  tds: number;
+  head: string;
+}
+
+export interface Itr2HisabTax {
+  taxNormal: number;
+  taxSpecialRates: number;
+  rebate: number;
+  surcharge: number;
+  cess: number;
+  grossLiability: number;
+  netLiability: number;
+  aggregateLiability: number;
+}
+
+export interface Itr2Detail {
+  form: 'ITR2';
+  assessmentYear: string;
+  financialYear: string;
+  regime: TaxRegime;
+  personal: {
+    name: string;
+    pan: string;
+    fatherName: string;
+    dob: string;
+    aadhaar: string;
+    mobile: string;
+    email: string;
+    address: string;
+    city: string;
+    state: string;
+    pinCode: string;
+    status: string;
+    residentStatus: string;
+    filingSection: string;
+    returnFileSec: number;
+    ackNumber: string;
+    filingDate: string;
+  };
+  salary: Itr2Salary;
+  houseProperties: Itr2HouseProperty[];
+  capitalGains: Itr2CapitalGains;
+  otherSources: Itr2OtherSources;
+  cyla: Itr2LossHead[];
+  bfla: Itr2LossHead[];
+  cfl: Itr2CfLoss;
+  via: Itr2ChapterVia;
+  exemptIncome: Itr2ExemptIncome;
+  amt: Itr2AmtDetail;
+  specialIncomes: Itr2SpecialIncome[];
+  foreignTaxRelief: {
+    taxPaidOutsideIndia: number;
+    taxReliefOutsideIndia: number;
+  };
+  income: {
+    salary: number;
+    houseProperty: number;
+    capitalGains: number;
+    otherSources: number;
+    grossTotal: number;
+    specialRateIncome: number;
+    viaDeductions: number;
+    totalIncome: number;
+    aggregateIncome: number;
+  };
+  taxComputed: {
+    taxNormal: number;
+    taxSpecialRates: number;
+    taxOnTotIncome: number;
+    rebate87A: number;
+    surcharge: number;
+    educationCess: number;
+    grossTaxLiability: number;
+    taxRelief: number;
+    netTaxLiability: number;
+    interest234A: number;
+    interest234B: number;
+    interest234C: number;
+    lateFee234F: number;
+    totalInterest: number;
+    aggregateLiability: number;
+  };
+  hisabTax: Itr2HisabTax;
+  taxesPaid: {
+    advanceTax: number;
+    tds: number;
+    tcs: number;
+    selfAssessmentTax: number;
+    total: number;
+    balancePayable: number;
+    challans: Itr2Challan[];
+    tdsSalary: Itr2TdsSalary[];
+    tdsOther: Itr2TdsOther[];
+  };
+  refund: {
+    refundDue: number;
+    banks: Itr2BankDetail[];
+  };
   verification: Itr3Verification;
 }

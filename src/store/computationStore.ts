@@ -66,7 +66,7 @@ export const useComputationStore = create<ComputationStoreState>((set) => ({
         }
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Invalid JSON file. Please upload a valid ITR-1 / ITR-3 / ITR-4 export.';
+      const message = error instanceof Error ? error.message : 'Invalid JSON file. Please upload a valid ITR-1 / ITR-2 / ITR-3 / ITR-4 export.';
       set({
         normalizedData: null,
         depreciationAssets: [],
@@ -97,7 +97,7 @@ export const useComputationStore = create<ComputationStoreState>((set) => ({
     } catch (_) {
       return {
         ok: false,
-        error: 'The previous year file could not be parsed as ITR-1, ITR-3 or ITR-4. Please check the file and try again.'
+        error: 'The previous year file could not be parsed as ITR-1, ITR-2, ITR-3 or ITR-4. Please check the file and try again.'
       };
     }
   },
