@@ -1,4 +1,5 @@
 import { useComputationStore } from '../store/computationStore';
+import { useGuardedDownload } from '../hooks/useGuardedDownload';
 import { buildItr3Report } from '../itr3/report';
 import { generateItr3Pdf } from '../itr3/pdf';
 import { formatINR } from '../utils/currency';
@@ -11,6 +12,9 @@ interface I3FinalHisabCheckProps {
 export function I3FinalHisabCheck({ onNavigate, onFinalize }: I3FinalHisabCheckProps) {
   const normalizedData = useComputationStore((s) => s.normalizedData);
   const isFinalized = useComputationStore((s) => s.isFinalized);
+  const handleDownload = useGuardedDownload(async () => {
+    if (normalizedData) await generateItr3Pdf(normalizedData);
+  });
 
   if (!normalizedData?.itr3) {
     return (
@@ -24,10 +28,6 @@ export function I3FinalHisabCheck({ onNavigate, onFinalize }: I3FinalHisabCheckP
   const taxpayer = normalizedData.taxpayer;
   const checks = report.hisabCheck;
   const allPass = report.checksAllPass;
-
-  const handleDownload = async () => {
-    await generateItr3Pdf(normalizedData);
-  };
 
   return (
     <div className="section">

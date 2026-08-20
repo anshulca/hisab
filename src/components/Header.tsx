@@ -1,4 +1,5 @@
 import { useTheme } from '../hooks/useTheme';
+import { useFreeStatus } from '../hooks/useGuardedDownload';
 
 interface HeaderProps {
   onNavigate: (section: string) => void;
@@ -15,6 +16,7 @@ function scrollToSection(id: string, onNavigate: (s: string) => void) {
 export function Header({ onNavigate, isFinalized }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
+  const status = useFreeStatus();
 
   return (
     <header className="header">
@@ -52,6 +54,14 @@ export function Header({ onNavigate, isFinalized }: HeaderProps) {
               </svg>
             </div>
           </label>
+
+          {status.isAdmin ? (
+            <span className="usage-pill" title="Admin access enabled — unlimited reports">ADMIN · Unlimited</span>
+          ) : (
+            <span className="usage-pill" title="Free reports remaining on this device">
+              {status.remaining} of {status.limit} free reports left
+            </span>
+          )}
 
           <button className="try-btn" onClick={() => onNavigate('app')}>
             <i className="fas fa-lock" style={{ marginRight: 6, fontSize: '0.6rem' }} /> Try HISAB

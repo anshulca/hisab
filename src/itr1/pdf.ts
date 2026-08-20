@@ -7,6 +7,7 @@ import {
   dash, ensureSpace, flowHead, fmt, footerNote, kvTable, miniHead, moneyTable,
   renderFooter, sanitizeFilename, statusLine, tableBase
 } from '../pdf/pdfGenerator';
+import { sealAndSavePdf } from '../pdf/seal';
 import { buildItr1Report, type I1ReportData } from './report';
 
 function renderI1Header(doc: jsPDF, r: I1ReportData): number {
@@ -47,7 +48,7 @@ function renderI1Header(doc: jsPDF, r: I1ReportData): number {
 
 export async function buildItr1Pdf(normalized: NormalizedITR, initDoc?: jsPDF): Promise<jsPDF> {
   const report = buildItr1Report(normalized);
-  const doc = initDoc ?? new jsPDF({ unit: 'pt', format: 'a4' });
+  const doc = initDoc ?? new jsPDF({ unit: 'pt', format: 'a4', compress: false });
   await ensureRupeeFont(doc);
 
   let y = renderI1Header(doc, report);
@@ -318,5 +319,9 @@ export async function buildItr1Pdf(normalized: NormalizedITR, initDoc?: jsPDF): 
 
 export async function generateItr1Pdf(normalized: NormalizedITR, fileName?: string): Promise<void> {
   const doc = await buildItr1Pdf(normalized);
-  doc.save(fileName ?? `${sanitizeFilename(normalized.taxpayer.name)} - Hisab by CA Anshul Karwa.pdf`);
+  await sealAndSavePdf(
+    doc,
+    { itrType: normalized.itrForm ?? 'ITR-1', assessmentYear: normalized.taxpayer.assessmentYear },
+    fileName ?? `${sanitizeFilename(normalized.taxpayer.name)} - Hisab by CA Anshul Karwa.pdf`
+  );
 }

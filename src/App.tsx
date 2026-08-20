@@ -21,10 +21,16 @@ import { CompareWorkspace } from './components/CompareWorkspace';
 import { ReportViewer } from './components/ReportViewer';
 import { Footer } from './components/Footer';
 import { LegalPage, type LegalTab } from './components/LegalPage';
+import { UsageLimitModal } from './components/UsageLimitModal';
+import { useUsageStore, tryUnlockAdminFromUrl } from './access/usageStore';
 
 function App() {
   const store = useComputationStore();
   const [activeSection, setActiveSection] = useState<string>('hero');
+
+  React.useEffect(() => {
+    void tryUnlockAdminFromUrl();
+  }, []);
 
   const handleFinalize = () => {
     if (window.confirm('Once finalized, the current computation will be treated as the final working version. Continue?')) {
@@ -108,6 +114,10 @@ function App() {
         {renderSection()}
       </main>
       <Footer onNavigate={setActiveSection} />
+      <UsageLimitModal
+        open={useUsageStore((s) => s.limitModalOpen)}
+        onClose={() => useUsageStore.getState().closeLimitModal()}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import type { CompareResult } from '../calculation/comparisonEngine';
 import { formatINR } from '../utils/currency';
 import { ReportGenerator, type ReportData } from '../reports/reportGenerator';
 import { ensureRupeeFont } from './fonts';
+import { sealAndSavePdf } from './seal';
 
 export const INK: [number, number, number] = [26, 27, 34];
 export const MUTED: [number, number, number] = [122, 118, 126];
@@ -37,7 +38,7 @@ export function sanitizeFilename(name: string): string {
 
 export async function buildPdf(normalized: NormalizedITR, _options: PdfOptions = {}, initDoc?: jsPDF): Promise<jsPDF> {
   const report = new ReportGenerator().generate(normalized);
-  const doc = initDoc ?? new jsPDF({ unit: 'pt', format: 'a4' });
+  const doc = initDoc ?? new jsPDF({ unit: 'pt', format: 'a4', compress: false });
   await ensureRupeeFont(doc);
 
   let y = renderHeader(doc, report);
@@ -74,7 +75,11 @@ export async function generatePdf(normalized: NormalizedITR, options: PdfOptions
   const doc = await buildPdf(normalized, options);
   const fileName =
     options.fileName ?? `${sanitizeFilename(normalized.taxpayer.name)} - Hisab by CA Anshul Karwa.pdf`;
-  doc.save(fileName);
+  await sealAndSavePdf(
+    doc,
+    { itrType: normalized.itrForm ?? 'ITR-4', assessmentYear: normalized.taxpayer.assessmentYear },
+    fileName
+  );
 }
 
 /* ================= helpers ================= */
@@ -581,7 +586,7 @@ function renderDeclaration(doc: jsPDF, r: ReportData, y: number): number {
 
 /* ================= Footer ================= */
 
-export function renderFooter(doc: jsPDF) {
+export function renderFooter(doc: jsPDF, reportId?: string) {
   type GStateCtor = new (opts: { opacity: number }) => unknown;
   const gs = doc as unknown as { GState: GStateCtor };
   const pages = doc.getNumberOfPages();
@@ -592,8 +597,15 @@ export function renderFooter(doc: jsPDF) {
     doc.setFont('Roboto', 'bold');
     doc.setFontSize(42);
     doc.setTextColor(150, 148, 150);
-    doc.text('CA Anshul Karwa', PAGE_W / 2, PAGE_H / 2, { align: 'center', angle: 30 });
+    doc.text('HISAB by CA Anshul Karwa', PAGE_W / 2, PAGE_H / 2, { align: 'center', angle: 30 });
     doc.setGState(new gs.GState({ opacity: 1 }));
+
+    if (reportId) {
+      doc.setFont('Roboto', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
+      doc.text(`HISAB Report ID ${reportId}`, MARGIN, PAGE_H - 26);
+    }
 
     doc.setFont('Roboto', 'normal');
     doc.setFontSize(7.5);
@@ -606,7 +618,7 @@ export function renderFooter(doc: jsPDF) {
 /* ================= Compare PDF ================= */
 
 export async function generateComparePdf(result: CompareResult, options: PdfOptions = {}): Promise<void> {
-  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const doc = new jsPDF({ unit: 'pt', format: 'a4', compress: false });
   await ensureRupeeFont(doc);
   const margin = MARGIN;
   const width = PAGE_W;
@@ -693,7 +705,10 @@ export async function generateComparePdf(result: CompareResult, options: PdfOpti
   }
 
   renderFooter(doc);
-
   const fileName = options.fileName ?? `HISAB_Compare_${n.taxpayer.pan}_${n.taxpayer.assessmentYear.replace('-', '_')}.pdf`;
-  doc.save(fileName);
+  await sealAndSavePdf(
+    doc,
+    { itrType: 'Compare', assessmentYear: n.taxpayer.assessmentYear },
+    fileName
+  );
 }

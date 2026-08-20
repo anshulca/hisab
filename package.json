@@ -8,11 +8,15 @@
     "build": "tsc && vite build && node scripts/build-protection.mjs && node scripts/test-protection.mjs",
     "preview": "vite preview",
     "test:itr3": "node scripts/itr3-smoke.mjs && node scripts/itr3-pdf-test.mjs",
-    "test:itr2": "node scripts/itr2-smoke.mjs && node scripts/itr2-pdf-test.mjs"
+    "test:itr2": "node scripts/itr2-smoke.mjs && node scripts/itr2-pdf-test.mjs",
+    "test:seal": "node scripts/seal-test.mjs",
+    "test:access": "node scripts/access-test.mjs",
+    "test:security": "node scripts/seal-test.mjs && node scripts/access-test.mjs"
   },
   "dependencies": {
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.28",
+    "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",

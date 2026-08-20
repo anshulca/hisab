@@ -1,4 +1,5 @@
 import { useComputationStore } from '../store/computationStore';
+import { useGuardedDownload } from '../hooks/useGuardedDownload';
 import { generateItr1Pdf } from '../itr1/pdf';
 import { buildItr1Report } from '../itr1/report';
 import { compactINR, formatINR } from '../utils/currency';
@@ -11,6 +12,9 @@ export function I1ReviewCentre({ onNavigate }: I1ReviewCentreProps) {
   const normalizedData = useComputationStore((s) => s.normalizedData);
   const upload = useComputationStore((s) => s.upload);
   const itrForm = useComputationStore((s) => s.itrForm);
+  const handleDownload = useGuardedDownload(async () => {
+    if (normalizedData) await generateItr1Pdf(normalizedData);
+  });
 
   if (!normalizedData?.itr1) {
     return (
@@ -27,10 +31,6 @@ export function I1ReviewCentre({ onNavigate }: I1ReviewCentreProps) {
   const d = normalizedData.itr1;
   const report = buildItr1Report(normalizedData);
   const taxpayer = normalizedData.taxpayer;
-
-  const handleDownload = async () => {
-    await generateItr1Pdf(normalizedData);
-  };
 
   const quickFacts = [
     { label: 'Total Income', value: compactINR(d.income.totalIncomeReported.value || report.income.grossTotalCalculated) },

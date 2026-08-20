@@ -1,4 +1,5 @@
 import { useComputationStore } from '../store/computationStore';
+import { useGuardedDownload } from '../hooks/useGuardedDownload';
 import { generateItr3Pdf } from '../itr3/pdf';
 import { buildItr3Report } from '../itr3/report';
 import { formatINR } from '../utils/currency';
@@ -9,6 +10,9 @@ interface I3ReportViewerProps {
 
 export function I3ReportViewer({ onBack }: I3ReportViewerProps) {
   const normalizedData = useComputationStore((s) => s.normalizedData);
+  const handleDownload = useGuardedDownload(async () => {
+    if (normalizedData) await generateItr3Pdf(normalizedData);
+  });
 
   if (!normalizedData?.itr3) {
     return (
@@ -23,10 +27,6 @@ export function I3ReportViewer({ onBack }: I3ReportViewerProps) {
 
   const reportSections = normalizedData.reportSections;
   const report = buildItr3Report(normalizedData);
-
-  const handleDownload = async () => {
-    await generateItr3Pdf(normalizedData);
-  };
 
   return (
     <div className="section">

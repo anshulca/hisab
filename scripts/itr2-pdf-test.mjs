@@ -31,7 +31,10 @@ await build({
   platform: 'node',
   format: 'esm',
   mainFields: ['module', 'main'],
-  alias: { 'jspdf-autotable': 'jspdf-autotable/es' },
+  alias: {
+    'jspdf-autotable': 'jspdf-autotable/es',
+    qrcode: resolve(root, 'scripts/stubs/qrcode-stub.mjs')
+  },
   outfile: pdfOut,
   logLevel: 'error'
 });

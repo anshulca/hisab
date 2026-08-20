@@ -5,6 +5,7 @@ import { parseAnyITRObject } from '../parser/parseAnyITR';
 import { compareYears, type CompareResult } from '../calculation/comparisonEngine';
 import { formatINR } from '../utils/currency';
 import { generateComparePdf } from '../pdf/pdfGenerator';
+import { useGuardedDownload } from '../hooks/useGuardedDownload';
 
 interface CompareWorkspaceProps {
   onNavigate: (section: string) => void;
@@ -64,6 +65,10 @@ export function CompareWorkspace({ onNavigate }: CompareWorkspaceProps) {
     setReport(compareYears(prev?.parsed.normalized ?? null, curr.parsed.normalized));
   };
 
+  const handleDownload = useGuardedDownload(async () => {
+    if (report) await generateComparePdf(report);
+  });
+
   const slotUi = (slot: SlotKey, label: string, hint: string, file: LoadedFile | null, error: string | null) => {
     const dz = slot === 'prev' ? prevDrop : currDrop;
     return (
@@ -118,7 +123,7 @@ export function CompareWorkspace({ onNavigate }: CompareWorkspaceProps) {
             Generate Comparison <i className="fas fa-arrow-right" />
           </button>
           {report && (
-            <button className="btn-ghost" onClick={async () => { if (report) await generateComparePdf(report); }}>⬇ Download PDF</button>
+            <button className="btn-ghost" onClick={handleDownload}>⬇ Download PDF</button>
           )}
           <button className="btn-ghost" onClick={() => onNavigate('app')}>← Single File Mode</button>
         </div>

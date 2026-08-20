@@ -1,4 +1,5 @@
 import { useComputationStore } from '../store/computationStore';
+import { useGuardedDownload } from '../hooks/useGuardedDownload';
 import { buildItr2Report, maskPan } from '../itr2/report';
 import { generateItr2Pdf } from '../itr2/pdf';
 import { formatINR } from '../utils/currency';
@@ -11,6 +12,9 @@ interface I2FinalHisabCheckProps {
 export function I2FinalHisabCheck({ onNavigate, onFinalize }: I2FinalHisabCheckProps) {
   const normalizedData = useComputationStore((s) => s.normalizedData);
   const isFinalized = useComputationStore((s) => s.isFinalized);
+  const handleDownload = useGuardedDownload(async () => {
+    if (normalizedData) await generateItr2Pdf(normalizedData);
+  });
 
   if (!normalizedData?.itr2) {
     return (
@@ -24,10 +28,6 @@ export function I2FinalHisabCheck({ onNavigate, onFinalize }: I2FinalHisabCheckP
   const taxpayer = normalizedData.taxpayer;
   const checks = report.hisabCheck;
   const allPass = report.checksAllPass;
-
-  const handleDownload = async () => {
-    await generateItr2Pdf(normalizedData);
-  };
 
   return (
     <div className="section">

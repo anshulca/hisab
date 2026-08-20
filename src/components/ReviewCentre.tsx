@@ -1,5 +1,6 @@
 import { useComputation } from '../hooks/useComputation';
 import { useComputationStore } from '../store/computationStore';
+import { useGuardedDownload } from '../hooks/useGuardedDownload';
 import { ResultDashboard } from './ResultDashboard';
 import { generatePdf } from '../pdf/pdfGenerator';
 import { formatINR, compactINR } from '../utils/currency';
@@ -18,9 +19,10 @@ export function ReviewCentre({ onNavigate }: ReviewCentreProps) {
     onNavigate('app');
   };
 
-  const handleDownload = async () => {
+  const handleDownloadAsync = async () => {
     if (normalizedData) await generatePdf(normalizedData);
   };
+  const handleDownload = useGuardedDownload(handleDownloadAsync);
 
   const reconciliation = reportSections.find((s) => s.id === 'reconciliation');
   const parsingNote = reportSections.find((s) => s.id === 'parsing');

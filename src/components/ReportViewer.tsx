@@ -1,4 +1,5 @@
 import { useComputation } from '../hooks/useComputation';
+import { useGuardedDownload } from '../hooks/useGuardedDownload';
 import { generatePdf } from '../pdf/pdfGenerator';
 import { renderReportHtml } from '../reports/reportRenderer';
 import { formatINR } from '../utils/currency';
@@ -14,9 +15,10 @@ export function ReportViewer({ sections, onBack }: ReportViewerProps) {
 
   const reportSections = sections ?? normalizedData?.reportSections ?? [];
 
-  const handleDownload = async () => {
+  const handleDownloadAsync = async () => {
     if (normalizedData) await generatePdf(normalizedData);
   };
+  const handleDownload = useGuardedDownload(handleDownloadAsync);
 
   const handleDownloadHtml = () => {
     if (!normalizedData) return;
